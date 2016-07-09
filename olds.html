@@ -7,7 +7,7 @@ layout: news
 <ul>
 	{% for olds in site.categories.olds limit:2 %}
 		<li>
-			<a href="">{{olds.title}}</a>
+			<a href="{{site.baseurl}}{{olds.url}}">{{olds.title}}</a>
 			<p>{{olds.meta}}</p>
 		</li>
 	{% endfor %}
