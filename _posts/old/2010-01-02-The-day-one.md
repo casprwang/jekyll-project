@@ -3,7 +3,7 @@ layout: news
 title: The day one
 meta: About day one 
 source: www.baidu.com
-category: old
+category: olds
 ---
 
 sdjf
