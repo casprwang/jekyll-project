@@ -2,12 +2,18 @@
 layout: default
 ---
 
-<h1>wangsup</h1>
-<p>hello</p>
+<h2>The three days</h2>
 
+
+<ol>
+	{% for three in site.categories.three %}
+	<li>
+	<a href="">{{three.title}}</a>
+	{{three.content}}
+	</li>
+	{% endfor %}
+</ol>
 
 
 
 <h2>The 2010</h2>
-
-		
