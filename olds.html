@@ -1,0 +1,14 @@
+---
+layout: news
+---
+
+<h1>The 2010</h1>
+
+<ul>
+	{% for olds in site.categories.olds limit:2 %}
+		<li>
+			<a href="">{{olds.title}}</a>
+			<p>{{olds.meta}}</p>
+		</li>
+	{% endfor %}
+</ul>
