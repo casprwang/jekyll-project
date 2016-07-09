@@ -6,10 +6,10 @@ layout: default
 
 
 <ol>
-	{% for three in site.categories.three %}
+	{% for three in site.data.threedays %}
 	<li>
-	<a href="">{{three.title}}</a>
-	{{three.content}}
+		<a href="">{{three.title}}</a>
+		{{three.content | markdownify}}
 	</li>
 	{% endfor %}
 </ol>
