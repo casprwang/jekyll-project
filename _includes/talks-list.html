@@ -1,6 +1,6 @@
 <ul>
 	{% for talks in site.pages %}
-		{% if talks.type == 'dwarf' %} 
+		{% if talks.type == include.type %} 
 			<li>
 				{{talks.title}}
 			</li>
