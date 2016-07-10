@@ -1,0 +1,9 @@
+<ul>
+	{% for talks in site.pages %}
+		{% if talks.type == 'dwarf' %} 
+			<li>
+				{{talks.title}}
+			</li>
+		{% endif %}
+	{% endfor %}
+</ul>

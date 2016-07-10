@@ -1,0 +1,2621 @@
+FUNCTION  <SNR>69__isDebugEnabled_smart()
+Called 8 times
+Total time:   0.000043
+ Self time:   0.000043
+
+count  total (s)   self (s)
+    8              0.000035     return and(g:syntastic_debug, a:level)
+
+FUNCTION  <SNR>52_CreateDelimMapFromCms()
+Called 1 time
+Total time:   0.000057
+ Self time:   0.000057
+
+count  total (s)   self (s)
+    1              0.000008     if &ft == '' && exists('g:NERDDefaultDelims')
+                                    let delims = g:NERDDefaultDelims
+                                    for i in ['left', 'leftAlt', 'right', 'rightAlt']
+                                        if !has_key(delims, i)
+                                            let delims[i] = ''
+                                        endif
+                                    endfor
+                                    return delims
+                                endif
+    1              0.000034     return { 'left': substitute(&commentstring, '\([^ \t]*\)\s*%s.*', '\1', ''), 'right': substitute(&commentstring, '.*%s\s*\(.*\)', '\1', 'g'), 'nested': 0, 'leftAlt': '', 'rightAlt': '', 'nestedAlt': 0}
+
+FUNCTION  emmet#newNode()
+Called 6 times
+Total time:   0.000063
+ Self time:   0.000063
+
+count  total (s)   self (s)
+    6              0.000060   return { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'basevalue': 0, 'basedirect': 1, 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0, 'attrs_order': ['id', 'class'], 'block': 0 }
+
+FUNCTION  syntastic#log#debug()
+Called 5 times
+Total time:   0.000090
+ Self time:   0.000063
+
+count  total (s)   self (s)
+    5   0.000076   0.000049     if !s:_isDebugEnabled(a:level)
+    5              0.000006         return
+                                endif
+                            
+                                let leader = s:_log_timestamp()
+                                call s:_logRedirect(1)
+                            
+                                if a:0 > 0
+                                    " filter out dictionary functions
+                                    echomsg leader . a:msg . ' ' . strtrans(string(type(a:1) == type({}) || type(a:1) == type([]) ? filter(copy(a:1), 'type(v:val) != type(function("tr"))') : a:1))
+                                else
+                                    echomsg leader . a:msg
+                                endif
+                            
+                                call s:_logRedirect(0)
+
+FUNCTION  emmet#useFilter()
+Called 12 times
+Total time:   0.000194
+ Self time:   0.000194
+
+count  total (s)   self (s)
+   24              0.000032   for f in a:filters
+   12              0.000023     if a:filter ==# '/' && f =~# '^/'
+                                  return 1
+                                elseif f ==# a:filter
+                                  return 1
+                                endif
+   12              0.000007   endfor
+   12              0.000010   return 0
+
+FUNCTION  emmet#parseIntoTree()
+Called 3 times
+Total time:   0.018487
+ Self time:   0.000235
+
+count  total (s)   self (s)
+    3              0.000007   let abbr = a:abbr
+    3              0.000004   let type = a:type
+    3   0.000045   0.000015   let rtype = emmet#lang#exists(type) ? type : 'html'
+    3   0.018427   0.000205   return emmet#lang#{rtype}#parseIntoTree(abbr, type)
+
+FUNCTION  syntastic#log#debugShowOptions()
+Called 1 time
+Total time:   0.000014
+ Self time:   0.000009
+
+count  total (s)   self (s)
+    1   0.000012   0.000007     if !s:_isDebugEnabled(a:level)
+    1              0.000002         return
+                                endif
+                            
+                                let leader = s:_log_timestamp()
+                                call s:_logRedirect(1)
+                            
+                                let vlist = copy(type(a:names) == type('') ? [a:names] : a:names)
+                                let add_shell = index(vlist, 'shell') >= 0 && &shell !=# syntastic#util#var('shell')
+                                if !empty(vlist)
+                                    call map(vlist, "'&' . v:val . ' = ' . strtrans(string(eval('&' . v:val))) . (s:_is_modified(v:val) ? ' (!)' : '')")
+                                    if add_shell
+                                        call add(vlist, 'u:shell = ' . strtrans(string(syntastic#util#var('shell'))) . ' (!)')
+                                    endif
+                                    echomsg leader . join(vlist, ', ')
+                                endif
+                                call s:_logRedirect(0)
+
+FUNCTION  <SNR>51_MRU_LoadList()
+Called 1 time
+Total time:   0.000281
+ Self time:   0.000249
+
+count  total (s)   self (s)
+                                " If the MRU file is present, then load the list of filenames. Otherwise
+                                " start with an empty list.
+    1              0.000026     if filereadable(g:MRU_File)
+    1              0.000139         let s:MRU_files = readfile(g:MRU_File)
+    1              0.000028         if s:MRU_files[0] =~# '^\s*" Most recently edited files in Vim'
+                                        " Generated by the previous version of the MRU plugin.
+                                        " Discard the list.
+                                        let s:MRU_files = []
+                                    elseif s:MRU_files[0] =~# '^#'
+                                        " Remove the comment line
+    1              0.000004             call remove(s:MRU_files, 0)
+    1              0.000001         else
+                                        " Unsupported format
+                                        let s:MRU_files = []
+                                    endif
+    1              0.000001     else
+                                    let s:MRU_files = []
+                                endif
+                            
+                                " Refresh the MRU menu with the latest list of filenames
+    1   0.000057   0.000025     call s:MRU_Refresh_Menu()
+
+FUNCTION  <SNR>51_MRU_Refresh_Menu()
+Called 2 times
+Total time:   0.000047
+ Self time:   0.000047
+
+count  total (s)   self (s)
+    2              0.000018     if !has('menu') || !g:MRU_Add_Menu
+                                    " No support for menus
+    2              0.000005         return
+                                endif
+                            
+                                " Setup the cpoptions properly for the maps to work
+                                let old_cpoptions = &cpoptions
+                                set cpoptions&vim
+                            
+                                " Remove the MRU menu
+                                " To retain the teared-off MRU menu, we need to add a dummy entry
+                                silent! unmenu &File.&Recent\ Files
+                                " The menu priority of the File menu is 10. If the MRU plugin runs
+                                " first before menu.vim, the File menu order may not be correct.
+                                " So specify the priority of the File menu here.
+                                10noremenu &File.&Recent\ Files.Dummy <Nop>
+                                silent! unmenu! &File.&Recent\ Files
+                            
+                                anoremenu <silent> &File.&Recent\ Files.Refresh\ list :call <SID>MRU_LoadList()<CR>
+                                exe 'tmenu File.&Recent\ Files.Refresh\ list Reload the MRU file list from ' . s:MRU_escape_filename(g:MRU_File)
+                                anoremenu File.&Recent\ Files.-SEP1-           :
+                            
+                                " Add the filenames in the MRU list to the menu
+                                let entry_cnt = len(s:MRU_files)
+                                if entry_cnt > g:MRU_Max_Menu_Entries
+                                    " Show only MRU_Max_Menu_Entries file names in the menu
+                                    let mru_list = s:MRU_files[0 : g:MRU_Max_Menu_Entries - 1]
+                                    let entry_cnt = g:MRU_Max_Menu_Entries
+                                else
+                                    let mru_list = s:MRU_files
+                                endif
+                                if entry_cnt > g:MRU_Max_Submenu_Entries
+                            	" Split the MRU menu into sub-menus
+                                    for start_idx in range(0, entry_cnt, g:MRU_Max_Submenu_Entries)
+                                        let last_idx = start_idx + g:MRU_Max_Submenu_Entries - 1
+                                        if last_idx >= entry_cnt
+                                            let last_idx = entry_cnt - 1
+                                        endif
+                                        let prefix = 'Files\ (' . (start_idx + 1) . '\.\.\.' . (last_idx + 1) . ').'
+                                        call s:MRU_add_files_to_menu(prefix, mru_list[start_idx : last_idx])
+                                    endfor
+                                else
+                                    call s:MRU_add_files_to_menu('', mru_list)
+                                endif
+                            
+                                " Remove the dummy menu entry
+                                unmenu &File.&Recent\ Files.Dummy
+                            
+                                " Restore the previous cpoptions settings
+                                let &cpoptions = old_cpoptions
+
+FUNCTION  Powerline#Functions#GetShortPath()
+Called 3 times
+Total time:   0.000596
+ Self time:   0.000596
+
+count  total (s)   self (s)
+    3              0.000532 	let fullpath = split(expand('%:~'), '[/\\]')
+                            
+    3              0.000015 	if len(fullpath) > a:threshold
+                            		let fullpath = [fullpath[0], '…'] +  fullpath[-a:threshold + 1 :]
+                            	endif
+                            
+    3              0.000020 	return join(fullpath, '/')
+
+FUNCTION  ctrlp#utils#writecache()
+Called 1 time
+Total time:   0.000394
+ Self time:   0.000358
+
+count  total (s)   self (s)
+    1   0.000077   0.000041 	if isdirectory(ctrlp#utils#mkdir(a:0 ? a:1 : s:cache_dir))
+    1              0.000311 		sil! cal writefile(a:lines, a:0 >= 2 ? a:2 : ctrlp#utils#cachefile())
+    1              0.000002 	en
+
+FUNCTION  indent_guides#disable()
+Called 2 times
+Total time:   0.000116
+ Self time:   0.000035
+
+count  total (s)   self (s)
+    2              0.000007   let g:indent_guides_autocmds_enabled = 0
+    2   0.000099   0.000018   call indent_guides#clear_matches()
+
+FUNCTION  <SNR>32_chop()
+Called 1 time
+Total time:   0.000022
+ Self time:   0.000022
+
+count  total (s)   self (s)
+    1              0.000010 	if len(a:mrufs) > {s:max} | cal remove(a:mrufs, {s:max}, -1) | en
+    1              0.000002 	retu a:mrufs
+
+FUNCTION  <SNR>41__is_same_index()
+Called 11 times
+Total time:   0.000262
+ Self time:   0.000262
+
+count  total (s)   self (s)
+   11              0.000041     if a:old_line >= 0 && a:line == a:old_line && a:idx >= 0
+                                    if len(a:messages) <= 1
+                                        return 1
+                                    endif
+                            
+                                    if a:messages[a:idx].scol <= a:column || a:idx == 0
+                                        if a:idx == len(a:messages) - 1 || a:column < a:messages[a:idx + 1].scol
+                                            return 1
+                                        else
+                                            return 0
+                                        endif
+                                    else
+                                        return 0
+                                    endif
+                                else
+   11              0.000014         return 0
+                                endif
+
+FUNCTION  <SNR>32_savetofile()
+Called 1 time
+Total time:   0.000413
+ Self time:   0.000019
+
+count  total (s)   self (s)
+    1   0.000411   0.000017 	cal ctrlp#utils#writecache(a:mrufs, s:cadir, s:cafile)
+
+FUNCTION  <SNR>51_MRU_AddFile()
+Called 1 time
+Total time:   0.001481
+ Self time:   0.000644
+
+count  total (s)   self (s)
+    1              0.000007     if s:mru_list_locked
+                                    " MRU list is currently locked
+                                    return
+                                endif
+                            
+                                " Get the full path to the filename
+    1              0.000025     let fname = fnamemodify(bufname(a:acmd_bufnr + 0), ':p')
+    1              0.000004     if fname == ''
+                                    return
+                                endif
+                            
+                                " Skip temporary buffers with buftype set. The buftype is set for buffers
+                                " used by plugins.
+    1              0.000004     if &buftype != ''
+                                    return
+                                endif
+                            
+    1              0.000003     if g:MRU_Include_Files != ''
+                                    " If MRU_Include_Files is set, include only files matching the
+                                    " specified pattern
+                                    if fname !~# g:MRU_Include_Files
+                                        return
+                                    endif
+                                endif
+                            
+    1              0.000003     if g:MRU_Exclude_Files != ''
+                                    " Do not add files matching the pattern specified in the
+                                    " MRU_Exclude_Files to the MRU list
+    1              0.000017         if fname =~# g:MRU_Exclude_Files
+                                        return
+                                    endif
+    1              0.000001     endif
+                            
+                                " If the filename is not already present in the MRU list and is not
+                                " readable then ignore it
+    1              0.000009     let idx = index(s:MRU_files, fname)
+    1              0.000002     if idx == -1
+                                    if !filereadable(fname)
+                                        " File is not readable and is not in the MRU list
+                                        return
+                                    endif
+                                endif
+                            
+                                " Load the latest MRU file list
+    1   0.000296   0.000015     call s:MRU_LoadList()
+                            
+                                " Remove the new file name from the existing MRU list (if already present)
+    1              0.000148     call filter(s:MRU_files, 'v:val !=# fname')
+                            
+                                " Add the new file list to the beginning of the updated old file list
+    1              0.000008     call insert(s:MRU_files, fname, 0)
+                            
+                                " Trim the list
+    1              0.000007     if len(s:MRU_files) > g:MRU_Max_Entries
+                                    call remove(s:MRU_files, g:MRU_Max_Entries, -1)
+                                endif
+                            
+                                " Save the updated MRU list
+    1   0.000670   0.000129     call s:MRU_SaveList()
+                            
+                                " Refresh the MRU menu
+    1   0.000031   0.000016     call s:MRU_Refresh_Menu()
+                            
+                                " If the MRU window is open, update the displayed MRU list
+    1              0.000004     let bname = '__MRU_Files__'
+    1              0.000147     let winnum = bufwinnr(bname)
+    1              0.000004     if winnum != -1
+                                    let cur_winnr = winnr()
+                                    call s:MRU_Open_Window()
+                                    if winnr() != cur_winnr
+                                        exe cur_winnr . 'wincmd w'
+                                    endif
+                                endif
+
+FUNCTION  emmet#expandCursorExpr()
+Called 3 times
+Total time:   0.000131
+ Self time:   0.000131
+
+count  total (s)   self (s)
+    3              0.000005   let expand = a:expand
+    3              0.000012   if expand !~# '\${cursor}'
+    1              0.000001     if a:mode ==# 2
+                                  let expand = '${cursor}' . expand
+                                else
+    1              0.000003       let expand .= '${cursor}'
+    1              0.000000     endif
+    1              0.000000   endif
+    3              0.000025   let expand = substitute(expand, '\${\d\+:\?\([^}]\+\)}', '$select$$cursor$\1$select$', 'g')
+    3              0.000021   let expand = substitute(expand, '\${\d\+}', '$select$$cursor$$select$', 'g')
+    3              0.000017   let expand = substitute(expand, '\${cursor}', '$cursor$', '')
+    3              0.000013   let expand = substitute(expand, '\${cursor}', '', 'g')
+    3              0.000012   let expand = substitute(expand, '\${cursor}', '', 'g')
+    3              0.000003   return expand
+
+FUNCTION  SyntasticRefreshCursor()
+Called 12 times
+Total time:   0.001378
+ Self time:   0.001116
+
+count  total (s)   self (s)
+   12              0.000081     if !exists('b:syntastic_private_messages') || empty(b:syntastic_private_messages)
+                                    " file not checked
+    1              0.000001         return
+                                endif
+                            
+   11              0.000039     if !exists('b:syntastic_private_line')
+                                    let b:syntastic_private_line = -1
+                                endif
+   11              0.000031     let l = line('.')
+   11              0.000063     let current_messages = get(b:syntastic_private_messages, l, {})
+                            
+   11              0.000038     if !exists('b:syntastic_cursor_columns')
+                                    let b:syntastic_cursor_columns = g:syntastic_cursor_columns
+                                endif
+                            
+   11              0.000018     if b:syntastic_cursor_columns
+   11              0.000040         let c = virtcol('.')
+   11              0.000034         if !exists('b:syntastic_private_idx')
+                                        let b:syntastic_private_idx = -1
+                                    endif
+                            
+   11   0.000391   0.000129         if s:_is_same_index(l, b:syntastic_private_line, c, b:syntastic_private_idx, current_messages)
+                                        return
+                                    else
+   11              0.000028             let b:syntastic_private_line = l
+   11              0.000009         endif
+                            
+   11              0.000024         if !empty(current_messages)
+                                        let b:syntastic_private_idx = s:_find_index(c, current_messages)
+                                        call syntastic#util#wideMsg(current_messages[b:syntastic_private_idx].text)
+                                    else
+   11              0.000026             let b:syntastic_private_idx = -1
+   11              0.000052             echo
+   11              0.000009         endif
+   11              0.000009     else
+                                    if l == b:syntastic_private_line
+                                        return
+                                    endif
+                                    let b:syntastic_private_line = l
+                            
+                                    if !empty(current_messages)
+                                        call syntastic#util#wideMsg(current_messages[0].text)
+                                    else
+                                        echo
+                                    endif
+                                endif
+
+FUNCTION  ctrlp#utils#readfile()
+Called 1 time
+Total time:   0.000124
+ Self time:   0.000124
+
+count  total (s)   self (s)
+    1              0.000026 	if filereadable(a:file)
+    1              0.000074 		let data = readfile(a:file)
+    1              0.000006 		if empty(data) || type(data) != 3
+                            			unl data
+                            			let data = []
+                            		en
+    1              0.000001 		retu data
+                            	en
+                            	retu []
+
+FUNCTION  Pl#Statusline()
+Called 240 times
+Total time:   0.010781
+ Self time:   0.010781
+
+count  total (s)   self (s)
+  239              0.001178 		let mode = mode()
+                            
+  239              0.000435 		if ! a:current
+                            			let mode = 'N' " Normal (non-current)
+                            		elseif mode =~# '\v(v|V|)'
+                            			let mode = 'v' " Visual mode
+                            		elseif mode =~# '\v(s|S|)'
+                            			let mode = 's' " Select mode
+                            		elseif mode =~# '\vi'
+  209              0.000343 			let mode = 'i' " Insert mode
+  209              0.000246 		elseif mode =~# '\v(R|Rv)'
+                            			let mode = 'r' " Replace mode
+                            		else
+                            			" Fallback to normal mode
+   30              0.000098 			let mode = 'n' " Normal (current)
+   30              0.000037 		endif
+                            
+  239              0.001480 		return g:Pl#THEME[a:statusline].mode_statuslines[mode]
+
+FUNCTION  emmet#getSettings()
+Called 3 times
+Total time:   0.000024
+ Self time:   0.000024
+
+count  total (s)   self (s)
+    3              0.000006   return s:emmet_settings
+
+FUNCTION  ctrlp#mrufiles#cachefile()
+Called 1 time
+Total time:   0.000069
+ Self time:   0.000069
+
+count  total (s)   self (s)
+    1              0.000057 	if !exists('s:cadir') || !exists('s:cafile')
+                            		let s:cadir = ctrlp#utils#cachedir().ctrlp#utils#lash().'mru'
+                            		let s:cafile = s:cadir.ctrlp#utils#lash().'cache.txt'
+                            	en
+    1              0.000002 	retu s:cafile
+
+FUNCTION  nerdtree#checkForBrowse()
+Called 1 time
+Total time:   0.000020
+ Self time:   0.000020
+
+count  total (s)   self (s)
+    1              0.000015     if a:dir != '' && isdirectory(a:dir)
+                                    call g:NERDTreeCreator.CreateWindowTree(a:dir)
+                                endif
+
+FUNCTION  emmet#getFilters()
+Called 3 times
+Total time:   0.000559
+ Self time:   0.000062
+
+count  total (s)   self (s)
+    3   0.000536   0.000039   let filterstr = emmet#getResource(a:type, 'filters', '')
+    3              0.000019   return split(filterstr, '\s*,\s*')
+
+FUNCTION  emmet#unescapeDollarExpr()
+Called 3 times
+Total time:   0.000014
+ Self time:   0.000014
+
+count  total (s)   self (s)
+    3              0.000014   return substitute(a:expand, '\\\$', '$', 'g')
+
+FUNCTION  <SNR>48_BufWritePostHook()
+Called 1 time
+Total time:   0.000378
+ Self time:   0.000061
+
+count  total (s)   self (s)
+    1   0.000040   0.000022     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_AUTOCOMMANDS, 'autocmd: BufWritePost, buffer ' . bufnr('') . ' = ' . string(bufname(str2nr(bufnr('')))))
+    1   0.000336   0.000037     call s:UpdateErrors(1, [])
+
+FUNCTION  <SNR>48__is_quitting()
+Called 1 time
+Total time:   0.000028
+ Self time:   0.000028
+
+count  total (s)   self (s)
+    1              0.000002     let quitting = 0
+    1              0.000003     if exists('w:syntastic_wid')
+    1              0.000008         let key = a:buf . '_' . getbufvar(a:buf, 'changetick') . '_' . w:syntastic_wid
+    1              0.000003         let idx = index(s:_quit_pre, key)
+    1              0.000002         if idx >= 0
+    1              0.000004             call remove(s:_quit_pre, idx)
+    1              0.000001             let quitting = 1
+    1              0.000001         endif
+    1              0.000001     endif
+                            
+    1              0.000001     return quitting
+
+FUNCTION  emmet#lang#exists()
+Called 17 times
+Total time:   0.000206
+ Self time:   0.000206
+
+count  total (s)   self (s)
+   17              0.000069   if len(a:type) == 0
+                                return 0
+                              elseif has_key(s:exists, a:type)
+   17              0.000038     return s:exists[a:type]
+                              endif
+                              let s:exists[a:type] = len(globpath(&rtp, 'autoload/emmet/lang/'.a:type.'.vim')) > 0
+                              return s:exists[a:type]
+
+FUNCTION  emmet#reExpandDollarExpr()
+Called 3 times
+Total time:   0.000675
+ Self time:   0.000074
+
+count  total (s)   self (s)
+    3              0.000006   let expand = a:expand
+    3   0.000618   0.000017   let dollar_exprs = emmet#getDollarExprs(expand)
+    3              0.000005   if len(dollar_exprs) > 0
+                                if a:times < 9
+                                  for n in range(len(dollar_exprs))
+                                    let pair = get(dollar_exprs, n)
+                                    let pat = get(pair, 'expr')
+                                    let sub = get(pair, 'value')
+                                    let expand = substitute(expand, pat, sub, '')
+                                  endfor
+                                  return emmet#reExpandDollarExpr(expand, a:times + 1)
+                                endif
+                              endif
+    3              0.000003   return expand
+
+FUNCTION  <SNR>51_MRU_SaveList()
+Called 1 time
+Total time:   0.000541
+ Self time:   0.000541
+
+count  total (s)   self (s)
+    1              0.000007     let l = []
+    1              0.000008     call add(l, '# Most recently edited files in Vim (version 3.0)')
+    1              0.000038     call extend(l, s:MRU_files)
+    1              0.000486     call writefile(l, g:MRU_File)
+
+FUNCTION  <SNR>52_SetUpForNewFiletype()
+Called 1 time
+Total time:   0.000158
+ Self time:   0.000101
+
+count  total (s)   self (s)
+    1              0.000004     let ft = a:filetype
+                            
+                                "for compound filetypes, if we don't know how to handle the full filetype
+                                "then break it down and use the first part that we know how to handle
+    1              0.000008     if ft =~ '\.' && !has_key(s:delimiterMap, ft)
+                                    let filetypes = split(a:filetype, '\.')
+                                    for i in filetypes
+                                        if has_key(s:delimiterMap, i)
+                                            let ft = i
+                                            break
+                                        endif
+                                    endfor
+                                endif
+                            
+    1              0.000004     let b:NERDSexyComMarker = ''
+                            
+    1              0.000005     if has_key(s:delimiterMap, ft)
+                                    let b:NERDCommenterDelims = s:delimiterMap[ft]
+                                    for i in ['left', 'leftAlt', 'right', 'rightAlt']
+                                        if !has_key(b:NERDCommenterDelims, i)
+                                            let b:NERDCommenterDelims[i] = ''
+                                        endif
+                                    endfor
+                                    for i in ['nested', 'nestedAlt']
+                                        if !has_key(b:NERDCommenterDelims, i)
+                                            let b:NERDCommenterDelims[i] = 0
+                                        endif
+                                    endfor
+                                    " if g:NERD_<filetype>_alt_style is defined, use the alternate style
+                                    let b:NERDCommenterFirstInit = getbufvar(1,"NERDCommenterFirstInit")
+                                    if exists('g:NERDAltDelims_'.ft) && eval('g:NERDAltDelims_'.ft) && !b:NERDCommenterFirstInit
+                                        call s:SwitchToAlternativeDelimiters(0)
+                                        let b:NERDCommenterFirstInit = 1
+                                    endif
+                                else
+    1   0.000082   0.000025         let b:NERDCommenterDelims = s:CreateDelimMapFromCms()
+    1              0.000001     endif
+                            
+
+FUNCTION  syntastic#log#debugShowVariables()
+Called 1 time
+Total time:   0.000015
+ Self time:   0.000009
+
+count  total (s)   self (s)
+    1   0.000013   0.000007     if !s:_isDebugEnabled(a:level)
+    1              0.000001         return
+                                endif
+                            
+                                let leader = s:_log_timestamp()
+                                call s:_logRedirect(1)
+                            
+                                let vlist = type(a:names) == type('') ? [a:names] : a:names
+                                for name in vlist
+                                    let msg = s:_format_variable(name)
+                                    if msg !=# ''
+                                        echomsg leader . msg
+                                    endif
+                                endfor
+                            
+                                call s:_logRedirect(0)
+
+FUNCTION  <SNR>48_QuitPreHook()
+Called 1 time
+Total time:   0.000356
+ Self time:   0.000170
+
+count  total (s)   self (s)
+    1              0.000040     let buf = bufnr(fnameescape(a:fname))
+    1   0.000087   0.000051     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_AUTOCOMMANDS, 'autocmd: QuitPre, buffer ' . buf . ' = ' . string(a:fname))
+                            
+    1   0.000064   0.000014     if !syntastic#util#var('check_on_wq')
+    1   0.000135   0.000035         call syntastic#util#setWids()
+    1              0.000013         call add(s:_quit_pre, buf . '_' . getbufvar(buf, 'changetick') . '_' . w:syntastic_wid)
+    1              0.000001     endif
+                            
+    1              0.000007     if !empty(get(w:, 'syntastic_loclist_set', []))
+                                    call SyntasticLoclistHide()
+                                endif
+
+FUNCTION  emmet#getExpandos()
+Called 3 times
+Total time:   0.001484
+ Self time:   0.000055
+
+count  total (s)   self (s)
+    3   0.001458   0.000029   let expandos = emmet#getResource(a:type, 'expandos', {})
+    3              0.000007   if has_key(expandos, a:key)
+    1              0.000001     return expandos[a:key]
+                              endif
+    2              0.000002   return a:key
+
+FUNCTION  emmet#getDollarExprs()
+Called 3 times
+Total time:   0.000601
+ Self time:   0.000300
+
+count  total (s)   self (s)
+    3              0.000003   let expand = a:expand
+    3              0.000006   let dollar_list = []
+    3              0.000006   let dollar_reg = '\%(\\\)\@<!\${\(\([^{}]\|\%(\\\)\@\<=[{}]\)\{}\)}'
+    5              0.000004   while 1
+    5              0.000088     let matcharr = matchlist(expand, dollar_reg)
+    5              0.000010     if len(matcharr) > 0
+    2              0.000004       let key = get(matcharr, 1)
+    2              0.000012       if key !~# '^\d\+:'
+    2              0.000009         let key = substitute(key, '\\{', '{', 'g')
+    2              0.000008         let key = substitute(key, '\\}', '}', 'g')
+    2   0.000316   0.000015         let value = emmet#getDollarValueByKey(key)
+    2              0.000004         if type(value) ==# type('')
+                                      let expr = get(matcharr, 0)
+                                      call add(dollar_list, {'expr': expr, 'value': value})
+                                    endif
+    2              0.000001       endif
+    2              0.000001     else
+    3              0.000002       break
+                                endif
+    2              0.000042     let expand = substitute(expand, dollar_reg, '', '')
+    2              0.000001   endwhile
+    3              0.000003   return dollar_list
+
+FUNCTION  <SNR>32_mergelists()
+Called 1 time
+Total time:   0.000462
+ Self time:   0.000247
+
+count  total (s)   self (s)
+    1   0.000279   0.000086 	let diskmrufs = ctrlp#utils#readfile(ctrlp#mrufiles#cachefile())
+    1              0.000109 	cal filter(diskmrufs, 'index(s:mrufs, v:val) < 0')
+    1              0.000021 	let mrufs = s:mrufs + diskmrufs
+    1   0.000040   0.000018 	retu s:chop(mrufs)
+
+FUNCTION  syntastic#util#setWids()
+Called 1 time
+Total time:   0.000100
+ Self time:   0.000100
+
+count  total (s)   self (s)
+    2              0.000010     for tab in range(1, tabpagenr('$'))
+    3              0.000010         for win in range(1, tabpagewinnr(tab, '$'))
+    2              0.000010             if gettabwinvar(tab, win, 'syntastic_wid') ==# ''
+    2              0.000019                 call settabwinvar(tab, win, 'syntastic_wid', s:_wid_base . s:_wid_pool)
+    2              0.000009                 let s:_wid_pool += 1
+    2              0.000003             endif
+    2              0.000002         endfor
+    1              0.000001     endfor
+
+FUNCTION  Pl#Match#Validate()
+Called 60 times
+Total time:   0.002934
+ Self time:   0.002934
+
+count  total (s)   self (s)
+   60              0.000214 	let match = a:theme.matches[1]
+                            
+   60              0.000155 	if match == 'none'
+                            		return 0
+                            	elseif match == 'any'
+   60              0.000224 		let matches = a:theme.matches[2]
+                            
+   60              0.000142 		if ! len(matches)
+                            			" Empty match array matches everything
+    5              0.000008 			return 1
+                            		endif
+                            
+  108              0.000244 		for [eval, re] in matches
+   55              0.000813 			if match(eval(eval), '\v\C'. re) != -1
+    2              0.000002 				return 1
+                            			endif
+   53              0.000086 		endfor
+                            
+   53              0.000056 		return 0
+                            	endif
+
+FUNCTION  emmet#util#closePopup()
+Called 6 times
+Total time:   0.000101
+ Self time:   0.000101
+
+count  total (s)   self (s)
+    6              0.000068   return pumvisible() ? "\<c-e>" : ''
+
+FUNCTION  emmet#getFileType()
+Called 8 times
+Total time:   0.001465
+ Self time:   0.001198
+
+count  total (s)   self (s)
+    8              0.000047   let flg = get(a:000, 0, 0)
+    8              0.000018   let type = ''
+                            
+    8              0.000089   if has_key(s:emmet_settings, &filetype)
+    8              0.000025     let types = [&filetype]
+    8              0.000012   else
+                                let types = split(&filetype, '\.')
+                              endif
+    8              0.000035   for part in types
+    8   0.000236   0.000111     if emmet#lang#exists(part)
+    8              0.000022       let type = part
+    8              0.000012       break
+                                endif
+                                let base = emmet#getBaseType(part)
+                                if base !=# ''
+                                  if flg
+                                    let type = &filetype
+                                  else
+                                    let type = base
+                                  endif
+                                  unlet base
+                                  break
+                                endif
+                              endfor
+    8              0.000027   if type ==# 'html'
+    8   0.000237   0.000095     let pos = emmet#util#getcurpos()
+    8              0.000151     let type = synIDattr(synID(pos[1], pos[2], 1), 'name')
+    8              0.000054     if type =~# '^css\w'
+                                  let type = 'css'
+                                endif
+    8              0.000040     if type =~# '^html\w'
+                                  let type = 'html'
+                                endif
+    8              0.000027     if type =~# '^javaScript'
+                                  let type = 'javascript'
+                                endif
+    8              0.000038     if len(type) ==# 0 && type =~# '^xml'
+                                  let type = 'xml'
+                                endif
+    8              0.000007   endif
+    8              0.000034   if len(type) ==# 0 | let type = 'html' | endif
+    8              0.000012   return type
+
+FUNCTION  syntastic#util#var()
+Called 1 time
+Total time:   0.000050
+ Self time:   0.000038
+
+count  total (s)   self (s)
+    1   0.000050   0.000038     return call('syntastic#util#rawVar', ['syntastic_' . a:name] + a:000)
+
+FUNCTION  ctrlp#utils#mkdir()
+Called 1 time
+Total time:   0.000036
+ Self time:   0.000036
+
+count  total (s)   self (s)
+    1              0.000012 	if exists('*mkdir') && !isdirectory(a:dir)
+                            		sil! cal mkdir(a:dir, 'p')
+                            	en
+    1              0.000002 	retu a:dir
+
+FUNCTION  emmet#util#unique()
+Called 3 times
+Total time:   0.000080
+ Self time:   0.000080
+
+count  total (s)   self (s)
+    3              0.000004   let m = {}
+    3              0.000003   let r = []
+    9              0.000007   for i in a:arr
+    6              0.000011     if !has_key(m, i)
+    6              0.000010       let m[i] = 1
+    6              0.000012       call add(r, i)
+    6              0.000005     endif
+    6              0.000004   endfor
+    3              0.000003   return r
+
+FUNCTION  Pl#UpdateStatusline()
+Called 5 times
+Total time:   0.004345
+ Self time:   0.001411
+
+count  total (s)   self (s)
+    5              0.000018 		if empty(g:Pl#THEME)
+                            			" Load statuslines if they aren't loaded yet
+                            			call Pl#Load()
+                            		endif
+                            
+   65              0.000123 		for i in range(len(g:Pl#THEME))
+   60   0.003687   0.000753 			if Pl#Match#Validate(g:Pl#THEME[i], a:0 ? a:1 : 0)
+                            				" Update window-local statusline
+    7              0.000101 				call setwinvar(a:0 ? a:1 : 0, '&statusline',  '%!Pl#Statusline('. i .','. a:current .')')
+    7              0.000009 			endif
+   60              0.000064 		endfor
+
+FUNCTION  emmet#expandAbbr()
+Called 3 times
+Total time:   0.027475
+ Self time:   0.002024
+
+count  total (s)   self (s)
+    3   0.000964   0.000092   let type = emmet#getFileType()
+    3   0.000442   0.000034   let rtype = emmet#getFileType(1)
+    3   0.000206   0.000029   let indent = emmet#getIndentation(type)
+    3              0.000004   let expand = ''
+    3              0.000004   let line = ''
+    3              0.000004   let part = ''
+    3              0.000005   let rest = ''
+                            
+    3   0.000596   0.000037   let filters = emmet#getFilters(type)
+    3              0.000008   if len(filters) ==# 0
+    3              0.000007     let filters = ['html']
+    3              0.000002   endif
+                            
+    3              0.000004   if a:mode ==# 2
+                                let leader = substitute(input('Tag: ', ''), '^\s*\(.*\)\s*$', '\1', 'g')
+                                if len(leader) ==# 0
+                                  return ''
+                                endif
+                                if leader =~# s:filtermx
+                                  let filters = map(split(matchstr(leader, s:filtermx)[1:], '\s*[^\\]\zs,\s*'), 'substitute(v:val, "\\\\\\\\zs.\\\\ze", "&", "g")')
+                                  let leader = substitute(leader, s:filtermx, '', '')
+                                endif
+                                if leader =~# '\*'
+                                  let query = substitute(leader, '*', '*' . (a:lastline - a:firstline + 1), '')
+                                  if query !~# '}\s*$' && query !~# '\$#'
+                                    let query .= '>{$#}'
+                                  endif
+                                  if emmet#useFilter(filters, '/')
+                                    let spl = emmet#splitFilterArg(filters)
+                                    let fline = getline(a:firstline)
+                                    let query = substitute(query, '>\{0,1}{\$#}\s*$', '{\\$column\\$}*' . len(split(fline, spl)), '')
+                                  else
+                                    let spl = ''
+                                  endif
+                                  let items = emmet#parseIntoTree(query, type).child
+                                  let itemno = 0
+                                  for item in items
+                                    let inner = emmet#toString(item, rtype, 0, filters, 0, indent)
+                                    let inner = substitute(inner, '\$#', '$line'.(itemno*(a:lastline - a:firstline + 1)/len(items)+1).'$', 'g')
+                                    let expand .= inner
+                                    let itemno = itemno + 1
+                                  endfor
+                                  if emmet#useFilter(filters, 'e')
+                                    let expand = substitute(expand, '&', '\&amp;', 'g')
+                                    let expand = substitute(expand, '<', '\&lt;', 'g')
+                                    let expand = substitute(expand, '>', '\&gt;', 'g')
+                                  endif
+                                  let line = getline(a:firstline)
+                                  let part = substitute(line, '^\s*', '', '')
+                                  for n in range(a:firstline, a:lastline)
+                                    let lline = getline(n)
+                                    let lpart = substitute(lline, '^\s\+', '', '')
+                                    if emmet#useFilter(filters, 't')
+                                      let lpart = substitute(lpart, '^[0-9.-]\+\s\+', '', '')
+                                      let lpart = substitute(lpart, '\s\+$', '', '')
+                                    endif
+                                    if emmet#useFilter(filters, '/')
+                                      for column in split(lpart, spl)
+                                        let expand = substitute(expand, '\$column\$', '\=column', '')
+                                      endfor
+                                    else
+                                      let expand = substitute(expand, '\$line'.(n-a:firstline+1).'\$', '\=lpart', 'g')
+                                    endif
+                                  endfor
+                                  let expand = substitute(expand, '\$line\d*\$', '', 'g')
+                                  let expand = substitute(expand, '\$column\$', '', 'g')
+                                  let content = join(getline(a:firstline, a:lastline), "\n")
+                                  if stridx(expand, '$#') < len(expand)-2
+                                    let expand = substitute(expand, '^\(.*\)\$#\s*$', '\1', '')
+                                  endif
+                                  let expand = substitute(expand, '\$#', '\=content', 'g')
+                                else
+                                  let str = ''
+                                  if visualmode() ==# 'V'
+                                    let line = getline(a:firstline)
+                                    let lspaces = matchstr(line, '^\s*', '', '')
+                                    let part = substitute(line, '^\s*', '', '')
+                                    for n in range(a:firstline, a:lastline)
+                                      if len(leader) > 0
+                                        let line = getline(a:firstline)
+                                        let spaces = matchstr(line, '^\s*', '', '')
+                                        if len(spaces) >= len(lspaces)
+                                          let str .= indent . getline(n)[len(lspaces):] . "\n"
+                                        else
+                                          let str .= getline(n) . "\n"
+                                        endif
+                                      else
+                                        let lpart = substitute(getline(n), '^\s*', '', '')
+                                        let str .= lpart . "\n"
+                                      endif
+                                    endfor
+                                    if stridx(leader, '{$#}') ==# -1
+                                      let leader .= '{$#}'
+                                    endif
+                                    let items = emmet#parseIntoTree(leader, type).child
+                                  else
+                                    let save_regcont = @"
+                                    let save_regtype = getregtype('"')
+                                    silent! normal! gvygv
+                                    let str = @"
+                                    call setreg('"', save_regcont, save_regtype)
+                                    if stridx(leader, '{$#}') ==# -1
+                                      let leader .= '{$#}'
+                                    endif
+                                    let items = emmet#parseIntoTree(leader, type).child
+                                  endif
+                                  for item in items
+                                    let expand .= emmet#toString(item, rtype, 0, filters, 0, '')
+                                  endfor
+                                  if emmet#useFilter(filters, 'e')
+                                    let expand = substitute(expand, '&', '\&amp;', 'g')
+                                    let expand = substitute(expand, '<', '\&lt;', 'g')
+                                    let expand = substitute(expand, '>', '\&gt;', 'g')
+                                  endif
+                                  if stridx(leader, '{$#}') !=# -1
+                                    let expand = substitute(expand, '\$#', '\="\n" . str', 'g')
+                                  endif
+                                endif
+                              elseif a:mode ==# 4
+                                let line = getline('.')
+                                let spaces = matchstr(line, '^\s*')
+                                if line !~# '^\s*$'
+                                  put =spaces.a:abbr
+                                else
+                                  call setline('.', spaces.a:abbr)
+                                endif
+                                normal! $
+                                call emmet#expandAbbr(0, '')
+                                return ''
+                              else
+    3              0.000010     let line = getline('.')
+    3              0.000011     if col('.') < len(line)
+                                  let line = matchstr(line, '^\(.*\%'.col('.').'c\)')
+                                endif
+    3              0.000004     if a:mode ==# 1
+                                  let part = matchstr(line, '\([a-zA-Z0-9:_\-\@|]\+\)$')
+                                else
+    3              0.000029       let part = matchstr(line, '\(\S.*\)$')
+    3   0.000048   0.000018       let ftype = emmet#lang#exists(type) ? type : 'html'
+    3   0.000584   0.000032       let part = emmet#lang#{ftype}#findTokens(part)
+    3              0.000021       let line = line[0: strridx(line, part) + len(part) - 1]
+    3              0.000003     endif
+    3              0.000009     if col('.') ==# col('$')
+    3              0.000006       let rest = ''
+    3              0.000001     else
+                                  let rest = getline('.')[len(line):]
+                                endif
+    3              0.000006     let str = part
+    3              0.000032     if str =~# s:filtermx
+                                  let filters = split(matchstr(str, s:filtermx)[1:], '\s*,\s*')
+                                  let str = substitute(str, s:filtermx, '', '')
+                                endif
+    3   0.018528   0.000041     let items = emmet#parseIntoTree(str, rtype).child
+    5              0.000006     for item in items
+    2   0.003031   0.000022       let expand .= emmet#toString(item, rtype, 0, filters, 0, indent)
+    2              0.000002     endfor
+    3   0.000071   0.000011     if emmet#useFilter(filters, 'e')
+                                  let expand = substitute(expand, '&', '\&amp;', 'g')
+                                  let expand = substitute(expand, '<', '\&lt;', 'g')
+                                  let expand = substitute(expand, '>', '\&gt;', 'g')
+                                endif
+    3              0.000022     let expand = substitute(expand, '\$line\([0-9]\+\)\$', '\=submatch(1)', 'g')
+    3              0.000002   endif
+    3   0.000730   0.000022   let expand = emmet#expandDollarExpr(expand)
+    3   0.000156   0.000025   let expand = emmet#expandCursorExpr(expand, a:mode)
+    3              0.000004   if len(expand)
+    3              0.000010     if has_key(s:emmet_settings, 'timezone') && len(s:emmet_settings.timezone)
+                                  let expand = substitute(expand, '${datetime}', strftime('%Y-%m-%dT%H:%M:%S') . s:emmet_settings.timezone, 'g')
+                                else
+                                  " TODO: on windows, %z/%Z is 'Tokyo(Standard)'
+    3              0.000061       let expand = substitute(expand, '${datetime}', strftime('%Y-%m-%dT%H:%M:%S %z'), 'g')
+    3              0.000002     endif
+    3   0.000032   0.000018     let expand = emmet#unescapeDollarExpr(expand)
+    3              0.000006     if a:mode ==# 2 && visualmode() ==# 'v'
+                                  if a:firstline ==# a:lastline
+                                    let expand = substitute(expand, '[\r\n]\s*', '', 'g')
+                                  else
+                                    let expand = substitute(expand, '[\n]$', '', 'g')
+                                  endif
+                                  silent! normal! gv
+                                  let col = col('''<')
+                                  silent! normal! c
+                                  let line = getline('.')
+                                  let lhs = matchstr(line, '.*\%<'.col.'c.')
+                                  let rhs = matchstr(line, '\%>'.(col-1).'c.*')
+                                  let expand = lhs.expand.rhs
+                                  let lines = split(expand, '\n')
+                                  call setline(line('.'), lines[0])
+                                  if len(lines) > 1
+                                    call append(line('.'), lines[1:])
+                                  endif
+                                else
+    3              0.000019       if line[:-len(part)-1] =~# '^\s\+$'
+                                    let indent = line[:-len(part)-1]
+                                  else
+    3              0.000003         let indent = ''
+    3              0.000003       endif
+    3              0.000027       let expand = substitute(expand, '[\r\n]\s*$', '', 'g')
+    3   0.000067   0.000017       if emmet#useFilter(filters, 's')
+                                    let epart = substitute(expand, '[\r\n]\s*', '', 'g')
+                                  else
+    3              0.000030         let epart = substitute(expand, '[\r\n]', "\n" . indent, 'g')
+    3              0.000001       endif
+    3              0.000013       let expand = line[:-len(part)-1] . epart . rest
+    3              0.000021       let lines = split(expand, '[\r\n]', 1)
+    3              0.000005       if a:mode ==# 2
+                                    silent! exe 'normal! gvc'
+                                  endif
+    3              0.000024       call setline('.', lines[0])
+    3              0.000005       if len(lines) > 1
+    1              0.000005         call append('.', lines[1:])
+    1              0.000000       endif
+    3              0.000002     endif
+    3              0.000000   endif
+    3              0.000003   if g:emmet_debug > 1
+                                call getchar()
+                              endif
+    3              0.000033   if search('\ze\$\(cursor\|select\)\$', 'c')
+    3              0.000009     let oldselection = &selection
+    3              0.000018     let &selection = 'inclusive'
+    3              0.000008     if foldclosed(line('.')) !=# -1
+                                  silent! foldopen
+                                endif
+    3   0.000040   0.000011     let pos = emmet#util#getcurpos()
+    3   0.000381   0.000016     let use_selection = emmet#getResource(type, 'use_selection', 0)
+    3              0.000003     try
+    3              0.000005       let l:gdefault = &gdefault
+    3              0.000014       let &gdefault = 0
+    3              0.000008       if use_selection && getline('.')[col('.')-1:] =~# '^\$select'
+                                    let pos[2] += 1
+                                    silent! s/\$select\$//
+                                    let next = searchpos('.\ze\$select\$', 'nW')
+                                    silent! %s/\$\(cursor\|select\)\$//g
+                                    call emmet#util#selectRegion([pos[1:2], next])
+                                    return "\<esc>gv"
+                                  else
+    3              0.000054         silent! %s/\$\(cursor\|select\)\$//g
+    3              0.000011         silent! call setpos('.', pos)
+    3              0.000009         if col('.') < col('$')
+    2              0.000005           return "\<right>"
+                                    endif
+    1              0.000001       endif
+    1              0.000001     finally
+    3              0.000012       let &gdefault = l:gdefault
+    3              0.000003     endtry
+    1              0.000004     let &selection = oldselection
+    1              0.000001   endif
+    1              0.000001   return ''
+
+FUNCTION  <SNR>48__skip_file()
+Called 1 time
+Total time:   0.000088
+ Self time:   0.000052
+
+count  total (s)   self (s)
+    1              0.000008     let fname = expand('%', 1)
+    1   0.000053   0.000025     let skip = s:_is_quitting(bufnr('%')) || get(b:, 'syntastic_skip_checks', 0) || (&buftype !=# '') || !filereadable(fname) || getwinvar(0, '&diff') || getwinvar(0, '&previewwindow') || s:_ignore_file(fname) || fnamemodify(fname, ':e') =~? g:syntastic_ignore_extensions
+    1              0.000001     if skip
+    1   0.000013   0.000005         call syntastic#log#debug(g:_SYNTASTIC_DEBUG_TRACE, '_skip_file: skipping checks')
+    1              0.000000     endif
+    1              0.000000     return skip
+
+FUNCTION  emmet#getResource()
+Called 39 times
+Total time:   0.015771
+ Self time:   0.003770
+
+count  total (s)   self (s)
+   39              0.000155   if exists('b:emmet_' . a:name)
+                                return get(b:, 'emmet_' . a:name)
+                              endif
+   39              0.000063   let global = {}
+   39              0.000121   if has_key(s:emmet_settings, '*') && has_key(s:emmet_settings['*'], a:name)
+                                let global = extend(global, s:emmet_settings['*'][a:name])
+                              endif
+                            
+   39              0.000080   if has_key(s:emmet_settings, a:type)
+   39              0.000071     let types = [a:type]
+   39              0.000025   else
+                                let types = split(a:type, '\.')
+                              endif
+                            
+   51              0.000078   for type in types
+   39              0.000085     if !has_key(s:emmet_settings, type)
+                                  continue
+                                endif
+   39              0.000060     let ret = a:default
+                            
+   39              0.000104     if has_key(s:emmet_settings[type], 'extends')
+                                  let extends = s:emmet_settings[type].extends
+                                  if type(extends) ==# 1
+                                    let tmp = split(extends, '\s*,\s*')
+                                    unlet! extends
+                                    let extends = tmp
+                                  endif
+                                  for ext in extends
+                                    if has_key(s:emmet_settings, ext) && has_key(s:emmet_settings[ext], a:name)
+                                      if type(ret) ==# 3 || type(ret) ==# 4
+                                        call emmet#mergeConfig(ret, s:emmet_settings[ext][a:name])
+                                      else
+                                        let ret = s:emmet_settings[ext][a:name]
+                                      endif
+                                    endif
+                                  endfor
+                                endif
+                            
+   39              0.000100     if has_key(s:emmet_settings[type], a:name)
+   12              0.000031       if type(ret) ==# 3 || type(ret) ==# 4
+   12   0.012102   0.000101         call emmet#mergeConfig(ret, s:emmet_settings[type][a:name])
+   12              0.000149         return extend(global, ret)
+                                  else
+                                    return s:emmet_settings[type][a:name]
+                                  endif
+                                endif
+   27              0.000046     if !empty(ret)
+   15              0.000034       if type(ret) ==# 3 || type(ret) ==# 4
+                                    let ret = extend(global, ret)
+                                  endif
+   15              0.000012       return ret
+                                endif
+   12              0.000013   endfor
+                            
+   12              0.000018   let ret = a:default
+   12              0.000039   if type(ret) ==# 3 || type(ret) ==# 4
+    6              0.000014     let ret = extend(global, ret)
+    6              0.000004   endif
+   12              0.000011   return ret
+
+FUNCTION  indent_guides#process_autocmds()
+Called 2 times
+Total time:   0.000153
+ Self time:   0.000037
+
+count  total (s)   self (s)
+    2              0.000005   if g:indent_guides_autocmds_enabled
+                                call indent_guides#enable()
+                              else
+    2   0.000135   0.000019     call indent_guides#disable()
+    2              0.000001   end
+
+FUNCTION  328()
+Called 1 time
+Total time:   0.000030
+ Self time:   0.000030
+
+count  total (s)   self (s)
+    1              0.000004     if exists('g:syntastic_mode_map')
+                                    let self._mode = get(g:syntastic_mode_map, 'mode', 'active')
+                                    let self._activeFiletypes = copy(get(g:syntastic_mode_map, 'active_filetypes', []))
+                                    let self._passiveFiletypes = copy(get(g:syntastic_mode_map, 'passive_filetypes', []))
+                                else
+    1              0.000003         let self._mode = 'active'
+    1              0.000003         let self._activeFiletypes = []
+    1              0.000003         let self._passiveFiletypes = []
+    1              0.000001     endif
+
+FUNCTION  emmet#getIndentation()
+Called 6 times
+Total time:   0.000308
+ Self time:   0.000308
+
+count  total (s)   self (s)
+    6              0.000014   if a:0 > 0
+    6              0.000008     let type = a:1
+    6              0.000004   else
+                                let type = emmet#getFileType()
+                              endif
+    6              0.000062   if has_key(s:emmet_settings, type) && has_key(s:emmet_settings[type], 'indentation')
+                                let indent = s:emmet_settings[type].indentation
+                              elseif has_key(s:emmet_settings, 'indentation')
+                                let indent = s:emmet_settings.indentation
+                              elseif has_key(s:emmet_settings.variables, 'indentation')
+                                let indent = s:emmet_settings.variables.indentation
+                              else
+    6              0.000033     let sw = exists('*shiftwidth') ? shiftwidth() : &l:shiftwidth
+    6              0.000029     let indent = (&l:expandtab || &l:tabstop !=# sw) ? repeat(' ', sw) : "\t"
+    6              0.000004   endif
+    6              0.000008   return indent
+
+FUNCTION  emmet#mergeConfig()
+Called 12 times
+Total time:   0.012001
+ Self time:   0.012001
+
+count  total (s)   self (s)
+   12              0.000042   let [lhs, rhs] = [a:lhs, a:rhs]
+   12              0.000038   if type(lhs) ==# 3
+                                if type(rhs) ==# 3
+                                  let lhs += rhs
+                                  if len(lhs)
+                                    call remove(lhs, 0, len(lhs)-1)
+                                  endif
+                                  for rhi in rhs
+                                    call add(lhs, rhs[rhi])
+                                  endfor
+                                elseif type(rhs) ==# 4
+                                  let lhs += map(keys(rhs), '{v:val : rhs[v:val]}')
+                                endif
+                              elseif type(lhs) ==# 4
+   12              0.000016     if type(rhs) ==# 3
+                                  for V in rhs
+                                    if type(V) != 4
+                                      continue
+                                    endif
+                                    for k in keys(V)
+                                      let lhs[k] = V[k]
+                                    endfor
+                                  endfor
+                                elseif type(rhs) ==# 4
+  474              0.000734       for key in keys(rhs)
+  462              0.000775         if type(rhs[key]) ==# 3
+  252              0.000386           if !has_key(lhs, key)
+  252              0.000418             let lhs[key] = []
+  252              0.000145           endif
+  252              0.000402           if type(lhs[key]) == 3
+  252              0.000490             let lhs[key] += rhs[key]
+  252              0.000290           elseif type(lhs[key]) == 4
+                                        for k in keys(rhs[key])
+                                          let lhs[key][k] = rhs[key][k]
+                                        endfor
+                                      endif
+  252              0.000281         elseif type(rhs[key]) ==# 4
+    3              0.000004           if has_key(lhs, key)
+                                        call emmet#mergeConfig(lhs[key], rhs[key])
+                                      else
+    3              0.000006             let lhs[key] = rhs[key]
+    3              0.000003           endif
+    3              0.000002         else
+  207              0.000434           let lhs[key] = rhs[key]
+  207              0.000135         endif
+  462              0.000318       endfor
+   12              0.000010     endif
+   12              0.000005   endif
+
+FUNCTION  emmet#expandDollarExpr()
+Called 3 times
+Total time:   0.000708
+ Self time:   0.000033
+
+count  total (s)   self (s)
+    3   0.000707   0.000032   return emmet#reExpandDollarExpr(a:expand, 0)
+
+FUNCTION  emmet#util#cursorInRegion()
+Called 3 times
+Total time:   0.000117
+ Self time:   0.000051
+
+count  total (s)   self (s)
+    3   0.000112   0.000046   if !emmet#util#regionIsValid(a:region) | return 0 | endif
+                              let cur = emmet#util#getcurpos()[1:2]
+                              return emmet#util#pointInRegion(cur, a:region)
+
+FUNCTION  <SNR>48_BufEnterHook()
+Called 1 time
+Total time:   0.000125
+ Self time:   0.000109
+
+count  total (s)   self (s)
+    1   0.000041   0.000025     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_AUTOCOMMANDS, 'autocmd: BufEnter, buffer ' . bufnr('') . ' = ' . string(bufname(str2nr(bufnr('')))) . ', &buftype = ' . string(&buftype))
+    1              0.000049     if &buftype ==# ''
+                                    call s:notifiers.refresh(g:SyntasticLoclist.current())
+                                elseif &buftype ==# 'quickfix'
+                                    " TODO: this is needed because in recent versions of Vim lclose
+                                    " can no longer be called from BufWinLeave
+                                    " TODO: at this point there is no b:syntastic_loclist
+                                    let loclist = filter(copy(getloclist(0)), 'v:val["valid"] == 1')
+                                    let owner = str2nr(getbufvar(bufnr(''), 'syntastic_owner_buffer'))
+                                    let buffers = syntastic#util#unique(map(loclist, 'v:val["bufnr"]') + (owner ? [owner] : []))
+                                    if !empty(get(w:, 'syntastic_loclist_set', [])) && !empty(loclist) && empty(filter( buffers, 'syntastic#util#bufIsActive(v:val)' ))
+                                        call SyntasticLoclistHide()
+                                    endif
+                                endif
+
+FUNCTION  <SNR>110_itemno()
+Called 3 times
+Total time:   0.000016
+ Self time:   0.000016
+
+count  total (s)   self (s)
+    3              0.000006   let current = a:current
+    3              0.000004   if current.basedirect > 0
+    3              0.000003     if current.basevalue ==# 0
+    3              0.000003       return a:itemno
+                                else
+                                  return current.basevalue - 1 + a:itemno
+                                endif
+                              else
+                                if current.basevalue ==# 0
+                                  return current.multiplier - 1 - a:itemno
+                                else
+                                  return current.multiplier + current.basevalue - 2 - a:itemno
+                                endif
+                              endif
+
+FUNCTION  indent_guides#init_matches()
+Called 2 times
+Total time:   0.000014
+ Self time:   0.000014
+
+count  total (s)   self (s)
+    2              0.000014   let w:indent_guides_matches = exists('w:indent_guides_matches') ? w:indent_guides_matches : []
+
+FUNCTION  emmet#lang#html#findTokens()
+Called 3 times
+Total time:   0.000552
+ Self time:   0.000552
+
+count  total (s)   self (s)
+    3              0.000007   let str = a:str
+    3              0.000011   let [pos, last_pos] = [0, 0]
+    3              0.000004   while 1
+    3              0.000029     let tag = matchstr(str, '<[a-zA-Z].\{-}>', pos)
+    3              0.000007     if len(tag) == 0
+    3              0.000004       break
+                                endif
+                                let pos = stridx(str, tag, pos) + len(tag)
+                              endwhile
+    3              0.000003   while 1
+    3              0.000017     let tag = matchstr(str, '{%[^%]\{-}%}', pos)
+    3              0.000005     if len(tag) == 0
+    3              0.000003       break
+                                endif
+                                let pos = stridx(str, tag, pos) + len(tag)
+                              endwhile
+    3              0.000005   let last_pos = pos
+    5              0.000010   while len(str) > 0
+    4              0.000265     let token = matchstr(str, s:mx, pos)
+    4              0.000010     if token ==# ''
+    2              0.000002       break
+                                endif
+    2              0.000016     if token =~# '^\s'
+                                  let token = matchstr(token, '^\s*\zs.*')
+                                  let last_pos = stridx(str, token, pos)
+                                endif
+    2              0.000010     let pos = stridx(str, token, pos) + len(token)
+    2              0.000004   endwhile
+    3              0.000011   let str = a:str[last_pos :-1]
+    3              0.000020   if str =~# '^\w\+="[^"]*$'
+                                return ''
+                              endif
+    3              0.000004   return str
+
+FUNCTION  emmet#util#getcurpos()
+Called 11 times
+Total time:   0.000171
+ Self time:   0.000171
+
+count  total (s)   self (s)
+   11              0.000048   let pos = getpos('.')
+   11              0.000052   if mode(0) ==# 'i' && pos[2] > 0
+   11              0.000030     let pos[2] -=1
+   11              0.000011   endif
+   11              0.000014   return pos
+
+FUNCTION  <SNR>48_UpdateErrors()
+Called 1 time
+Total time:   0.000299
+ Self time:   0.000127
+
+count  total (s)   self (s)
+    1   0.000042   0.000027     call syntastic#log#debugShowVariables(g:_SYNTASTIC_DEBUG_TRACE, 'version')
+    1   0.000035   0.000021     call syntastic#log#debugShowOptions(g:_SYNTASTIC_DEBUG_TRACE, s:_DEBUG_DUMP_OPTIONS)
+    1   0.000032   0.000019     call syntastic#log#debugDump(g:_SYNTASTIC_DEBUG_VARIABLES)
+    1   0.000027   0.000015     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_TRACE, 'UpdateErrors' . (a:auto_invoked ? ' (auto)' : '') . ': ' . (len(a:checker_names) ? join(a:checker_names) : 'default checkers'))
+                            
+    1   0.000039   0.000009     call s:modemap.synch()
+                            
+    1   0.000120   0.000032     if s:_skip_file()
+    1              0.000001         return
+                                endif
+                            
+                                let run_checks = !a:auto_invoked || s:modemap.doAutoChecking()
+                                if run_checks
+                                    call s:CacheErrors(a:checker_names)
+                                    call syntastic#util#setChangedtick()
+                                else
+                                    if a:auto_invoked
+                                        return
+                                    endif
+                                endif
+                            
+                                let loclist = g:SyntasticLoclist.current()
+                            
+                                if exists('*SyntasticCheckHook')
+                                    call SyntasticCheckHook(loclist.getRaw())
+                                endif
+                            
+                                " populate loclist and jump {{{3
+                                let do_jump = syntastic#util#var('auto_jump') + 0
+                                if do_jump == 2
+                                    let do_jump = loclist.getFirstError(1)
+                                elseif do_jump == 3
+                                    let do_jump = loclist.getFirstError()
+                                elseif 0 > do_jump || do_jump > 3
+                                    let do_jump = 0
+                                endif
+                            
+                                let w:syntastic_loclist_set = []
+                                if syntastic#util#var('always_populate_loc_list') || do_jump
+                                    call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'loclist: setloclist (new)')
+                                    call setloclist(0, loclist.getRaw())
+                                    if !exists('b:syntastic_changedtick')
+                                        call syntastic#util#setChangedtick()
+                                    endif
+                                    let w:syntastic_loclist_set = [bufnr(''), b:syntastic_changedtick]
+                                    if run_checks && do_jump && !loclist.isEmpty()
+                                        call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'loclist: jump')
+                                        execute 'silent! lrewind ' . do_jump
+                            
+                                        " XXX: Vim doesn't call autocmd commands in a predictible
+                                        " order, which can lead to missing filetype when jumping
+                                        " to a new file; the following is a workaround for the
+                                        " resulting brain damage
+                                        if &filetype ==# ''
+                                            silent! filetype detect
+                                        endif
+                                    endif
+                                endif
+                                " }}}3
+                            
+                                call s:notifiers.refresh(loclist)
+
+FUNCTION  <SNR>32_record()
+Called 3 times
+Total time:   0.000849
+ Self time:   0.000177
+
+count  total (s)   self (s)
+    3              0.000017 	if s:locked | retu | en
+    3              0.000012 	let bufnr = a:bufnr + 0
+    3              0.000013 	let bufname = bufname(bufnr)
+    3              0.000013 	if bufnr > 0 && !empty(bufname)
+    3              0.000031 		cal filter(s:mrbs, 'v:val != bufnr')
+    3              0.000028 		cal insert(s:mrbs, bufnr)
+    3   0.000720   0.000048 		cal s:addtomrufs(bufname)
+    3              0.000004 	en
+
+FUNCTION  emmet#getDollarValueByKey()
+Called 2 times
+Total time:   0.000301
+ Self time:   0.000116
+
+count  total (s)   self (s)
+    2              0.000003   let ret = 0
+    2              0.000002   let key = a:key
+    2   0.000197   0.000012   let ftsetting = get(s:emmet_settings, emmet#getFileType())
+    2              0.000006   if type(ftsetting) ==# 4 && has_key(ftsetting, key)
+                                let V = get(ftsetting, key)
+                                if type(V) ==# 1 | return V | endif
+                              endif
+    2              0.000007   if type(ret) !=# 1 && has_key(s:emmet_settings.variables, key)
+                                let V = get(s:emmet_settings.variables, key)
+                                if type(V) ==# 1 | return V | endif
+                              endif
+    2              0.000007   if has_key(s:emmet_settings, 'custom_expands') && type(s:emmet_settings['custom_expands']) ==# 4
+    4              0.000009     for k in keys(s:emmet_settings['custom_expands'])
+    2              0.000010       if key =~# k
+                                    let V = get(s:emmet_settings['custom_expands'], k)
+                                    if type(V) ==# 1 | return V | endif
+                                    if type(V) ==# 2 | return V(key) | endif
+                                  endif
+    2              0.000002     endfor
+    2              0.000001   endif
+    2              0.000001   return ret
+
+FUNCTION  emmet#toString()
+Called 3 times
+Total time:   0.003952
+ Self time:   0.000425
+
+count  total (s)   self (s)
+    3              0.000005   let current = a:1
+    3              0.000004   if a:0 > 1
+    3              0.000004     let type = a:2
+    3              0.000002   else
+                                let type = &filetype
+                              endif
+    3              0.000009   if len(type) ==# 0 | let type = 'html' | endif
+    3              0.000003   if a:0 > 2
+    3              0.000005     let inline = a:3
+    3              0.000001   else
+                                let inline = 0
+                              endif
+    3              0.000002   if a:0 > 3
+    3              0.000003     if type(a:4) ==# 1
+                                  let filters = split(a:4, '\s*,\s*')
+                                else
+    3              0.000004       let filters = a:4
+    3              0.000001     endif
+    3              0.000001   else
+                                let filters = ['html']
+                              endif
+    3              0.000001   if a:0 > 4
+    3              0.000006     let group_itemno = a:5
+    3              0.000000   else
+                                let group_itemno = 0
+                              endif
+    3              0.000001   if a:0 > 5
+    3              0.000004     let indent = a:6
+    3              0.000001   else
+                                let indent = ''
+                              endif
+                            
+    3   0.000231   0.000018   let dollar_expr = emmet#getResource(type, 'dollar_expr', 1)
+    3              0.000003   let itemno = 0
+    3              0.000004   let str = ''
+    3   0.000033   0.000012   let rtype = emmet#lang#exists(type) ? type : 'html'
+    6              0.000010   while itemno < current.multiplier
+    3              0.000006     if len(current.name)
+    3              0.000003       if current.multiplier ==# 1
+    3   0.002114   0.000703         let inner = emmet#lang#{rtype}#toString(s:emmet_settings, current, type, inline, filters, s:itemno(group_itemno, current), indent)
+    3              0.000003       else
+                                    let inner = emmet#lang#{rtype}#toString(s:emmet_settings, current, type, inline, filters, s:itemno(itemno, current), indent)
+                                  endif
+    3              0.000003       if current.multiplier > 1
+                                    let inner = substitute(inner, '\$#', '$line'.(itemno+1).'$', 'g')
+                                  endif
+    3              0.000008       let str .= inner
+    3              0.000002     else
+                                  let snippet = current.snippet
+                                  if len(snippet) ==# 0
+                                    let snippets = emmet#getResource(type, 'snippets', {})
+                                    if !empty(snippets) && has_key(snippets, 'emmet_snippet')
+                                      let snippet = snippets['emmet_snippet']
+                                    endif
+                                  endif
+                                  if len(snippet) > 0
+                                    let tmp = snippet
+                                    let tmp = substitute(tmp, '\${emmet_name}', current.name, 'g')
+                                    let snippet_node = emmet#newNode()
+                                    let snippet_node.value = '{'.tmp.'}'
+                                    let snippet_node.important = current.important
+                                    let snippet_node.multiplier = current.multiplier
+                                    let str .= emmet#lang#{rtype}#toString(s:emmet_settings, snippet_node, type, inline, filters, s:itemno(group_itemno, current), indent)
+                                    if current.multiplier > 1
+                                      let str .= "\n"
+                                    endif
+                                  else
+                                    if len(current.name)
+                                      let str .= current.name
+                                    endif
+                                    if len(current.value)
+                                      let text = current.value[1:-2]
+                                      if dollar_expr
+                                        " TODO: regexp engine specified
+                                        if exists('&regexpengine')
+                                          let text = substitute(text, '\%#=1\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", max([itemno, group_itemno])+1).submatch(2)', 'g')
+                                        else
+                                          let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", max([itemno, group_itemno])+1).submatch(2)', 'g')
+                                        endif
+                                        let text = substitute(text, '\${nr}', "\n", 'g')
+                                        let text = substitute(text, '\\\$', '$', 'g')
+                                      endif
+                                      let str .= text
+                                    endif
+                                  endif
+                                  let inner = ''
+                                  if len(current.child)
+                                    for n in current.child
+                                      let inner .= emmet#toString(n, type, inline, filters, s:itemno(group_itemno, n), indent)
+                                    endfor
+                                  else
+                                    let inner = current.value[1:-2]
+                                  endif
+                                  let inner = substitute(inner, "\n", "\n" . indent, 'g')
+                                  let str = substitute(str, '\${child}', inner, '')
+                                endif
+    3              0.000005     let itemno = itemno + 1
+    3              0.000003   endwhile
+    3              0.000003   return str
+
+FUNCTION  emmet#lang#html#parseIntoTree()
+Called 3 times
+Total time:   0.018222
+ Self time:   0.004170
+
+count  total (s)   self (s)
+    3              0.000007   let abbr = a:abbr
+    3              0.000004   let type = a:type
+                            
+    3   0.000049   0.000025   let settings = emmet#getSettings()
+    3              0.000009   if !has_key(settings, type)
+                                let type = 'html'
+                              endif
+    3              0.000011   if len(type) == 0 | let type = 'html' | endif
+                            
+    3   0.000149   0.000018   let indent = emmet#getIndentation(type)
+    3              0.000043   let pmap = {'p': 'span','ul': 'li','ol': 'li','table': 'tr','tr': 'td','tbody': 'tr','thead': 'tr','tfoot': 'tr','colgroup': 'col','select': 'option','optgroup': 'option','audio': 'source','video': 'source','object': 'param','map': 'area'}
+                            
+    3              0.000060   let inlineLevel = split('a,abbr,acronym,applet,b,basefont,bdo,big,br,button,cite,code,del,dfn,em,font,i,iframe,img,input,ins,kbd,label,map,object,q,s,samp,select,small,span,strike,strong,sub,sup,textarea,tt,u,var',',')
+                            
+    3   0.000515   0.000026   let custom_expands = emmet#getResource(type, 'custom_expands', {})
+    3              0.000012   if empty(custom_expands) && has_key(settings, 'custom_expands')
+    3              0.000009     let custom_expands = settings['custom_expands']
+    3              0.000001   endif
+                            
+                              " try 'foo' to (foo-x)
+    3   0.001516   0.000032   let rabbr = emmet#getExpandos(type, abbr)
+    3              0.000006   if rabbr == abbr
+                                " try 'foo+(' to (foo-x)
+    2              0.000038     let rabbr = substitute(abbr, '\%(+\|^\)\([a-zA-Z][a-zA-Z0-9+]\+\)+\([(){}>]\|$\)', '\="(".emmet#getExpandos(type, submatch(1)).")".submatch(2)', 'i')
+    2              0.000002   endif
+    3              0.000004   let abbr = rabbr
+                            
+    3   0.000053   0.000021   let root = emmet#newNode()
+    3              0.000004   let parent = root
+    3              0.000004   let last = root
+    3              0.000004   let pos = []
+    6              0.000011   while len(abbr)
+                                " parse line
+    3              0.000148     let match = matchstr(abbr, s:mx)
+    3              0.000139     let str = substitute(match, s:mx, '\0', 'ig')
+    3              0.000118     let operator = substitute(match, s:mx, '\1', 'ig')
+    3              0.000109     let block_start = substitute(match, s:mx, '\2', 'ig')
+    3              0.000106     let tag_name = substitute(match, s:mx, '\3', 'ig')
+    3              0.000106     let attributes = substitute(match, s:mx, '\4', 'ig')
+    3              0.000104     let value = substitute(match, s:mx, '\5', 'ig')
+    3              0.000103     let basevalue = substitute(match, s:mx, '\6', 'ig')
+    3              0.000108     let multiplier = 0 + substitute(match, s:mx, '\7', 'ig')
+    3              0.000109     let block_end = substitute(match, s:mx, '\8', 'ig')
+    3              0.000004     let custom = ''
+    3              0.000003     let important = 0
+    3              0.000007     if len(str) == 0
+                                  break
+                                endif
+    3              0.000009     if tag_name =~# '^#'
+                                  let attributes = tag_name . attributes
+                                  let tag_name = ''
+                                endif
+    3              0.000013     if tag_name =~# '[^!]!$'
+                                  let tag_name = tag_name[:-2]
+                                  let important = 1
+                                endif
+    3              0.000009     if tag_name =~# '^\.'
+                                  let attributes = tag_name . attributes
+                                  let tag_name = ''
+                                endif
+    3              0.000008     if tag_name =~# '^\[.*\]$'
+                                  let attributes = tag_name . attributes
+                                  let tag_name = ''
+                                endif
+                            
+    6              0.000013     for k in keys(custom_expands)
+    3              0.000017       if tag_name =~ k
+                                    let custom = tag_name
+                                    let tag_name = ''
+                                    break
+                                  endif
+    3              0.000007     endfor
+                            
+    3              0.000006     if empty(tag_name)
+                                  let pname = len(parent.child) > 0 ? parent.child[0].name : ''
+                                  if !empty(pname) && has_key(pmap, pname)
+                                    let tag_name = pmap[pname]
+                                  elseif !empty(pname) && index(inlineLevel, pname) > -1
+                                    let tag_name = 'span'
+                                  elseif len(parent.child) == 0 || len(custom) == 0
+                                    let tag_name = 'div'
+                                  else
+                                    let tag_name = custom
+                                  endif
+                                endif
+                            
+    3              0.000010     let basedirect = basevalue[1] ==# '-' ? -1 : 1
+    3              0.000010     let basevalue = 0 + abs(basevalue[1:])
+    5              0.000010     if multiplier <= 0 | let multiplier = 1 | endif
+                            
+                                " make default node
+    3   0.000044   0.000013     let current = emmet#newNode()
+                            
+    3              0.000006     let current.name = tag_name
+    3              0.000005     let current.important = important
+                            
+                                " aliases
+    3   0.003303   0.000052     let aliases = emmet#getResource(type, 'aliases', {})
+    3              0.000008     if has_key(aliases, tag_name)
+                                  let current.name = aliases[tag_name]
+                                endif
+                            
+    3   0.000250   0.000020     let use_pipe_for_cursor = emmet#getResource(type, 'use_pipe_for_cursor', 1)
+                            
+                                " snippets
+    3   0.001712   0.000033     let snippets = emmet#getResource(type, 'snippets', {})
+    3              0.000006     if !empty(snippets)
+    3              0.000005       let snippet_name = tag_name
+    3              0.000006       if has_key(snippets, snippet_name)
+                                    let snippet = snippet_name
+                                    while has_key(snippets, snippet)
+                                      let snippet = snippets[snippet]
+                                    endwhile
+                                    if use_pipe_for_cursor
+                                      let snippet = substitute(snippet, '|', '${cursor}', 'g')
+                                    endif
+                                    " just redirect to expanding
+                                    if type == 'html' && snippet !~ '^\s*[{\[<]'
+                                       return emmet#lang#html#parseIntoTree(snippet, a:type)
+                                    endif
+                                    let lines = split(snippet, "\n", 1)
+                                    call map(lines, 'substitute(v:val, "\\(    \\|\\t\\)", escape(indent, "\\\\"), "g")')
+                                    let current.snippet = join(lines, "\n")
+                                    let current.name = ''
+                                  endif
+    3              0.000001     endif
+                            
+    6              0.000011     for k in keys(custom_expands)
+    3              0.000021       if tag_name =~# k
+                                    let current.snippet = '${' . (empty(custom) ? tag_name : custom) . '}'
+                                    let current.name = ''
+                                    break
+                                  elseif custom =~# k
+                                    let current.snippet = '${' . custom . '}'
+                                    let current.name = ''
+                                    break
+                                  endif
+    3              0.000002     endfor
+                            
+                                " default_attributes
+    3   0.006776   0.000075     let default_attributes = emmet#getResource(type, 'default_attributes', {})
+    3              0.000006     if !empty(default_attributes)
+    9              0.000017       for pat in [current.name, tag_name]
+    6              0.000011         if has_key(default_attributes, pat)
+                                      if type(default_attributes[pat]) == 4
+                                        let a = default_attributes[pat]
+                                        let current.attrs_order += keys(a)
+                                        if use_pipe_for_cursor
+                                          for k in keys(a)
+                                            let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
+                                          endfor
+                                        else
+                                          for k in keys(a)
+                                            let current.attr[k] = a[k]
+                                          endfor
+                                        endif
+                                      else
+                                        for a in default_attributes[pat]
+                                          let current.attrs_order += keys(a)
+                                          if use_pipe_for_cursor
+                                            for k in keys(a)
+                                              let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
+                                            endfor
+                                          else
+                                            for k in keys(a)
+                                              let current.attr[k] = a[k]
+                                            endfor
+                                          endif
+                                        endfor
+                                      endif
+                                      if has_key(settings.html.default_attributes, current.name)
+                                        let current.name = substitute(current.name, ':.*$', '', '')
+                                      endif
+                                      break
+                                    endif
+    6              0.000002       endfor
+    3              0.000002     endif
+                            
+                                " parse attributes
+    3              0.000006     if len(attributes)
+                                  let attr = attributes
+                                  while len(attr)
+                                    let item = matchstr(attr, '\(\%(\%(#[{}a-zA-Z0-9_\-\$]\+\)\|\%(\[\%("[^"]*"\|[^"\]]*\)\+\]\)\|\%(\.[{}a-zA-Z0-9_\-\$]\+\)*\)\)')
+                                    if g:emmet_debug > 1
+                                      echomsg 'attr=' . item
+                                    endif
+                                    if len(item) == 0
+                                      break
+                                    endif
+                                    if item[0] ==# '#'
+                                      let current.attr.id = item[1:]
+                                    endif
+                                    if item[0] ==# '.'
+                                      let current.attr.class = substitute(item[1:], '\.', ' ', 'g')
+                                    endif
+                                    if item[0] ==# '['
+                                      let atts = item[1:-2]
+                                      if matchstr(atts, '^\s*\zs[0-9a-zA-Z_\-:]\+\(="[^"]*"\|=''[^'']*''\|=[^ ''"]\+\)') ==# ''
+                                        let ks = []
+                            			if has_key(default_attributes, current.name)
+                                          let dfa = default_attributes[current.name]
+                                          let ks = type(dfa) == 3 ? keys(dfa[0]) : keys(dfa)
+                                        endif
+                                        if len(ks) == 0 && has_key(default_attributes, current.name . ':src')
+                                          let ks = keys(default_attributes[current.name . ':src'])
+                                        endif
+                                        if len(ks) > 0
+                                          let current.attr[ks[0]] = atts
+                                        else
+                                          let current.attr[atts] = ''
+                                        endif
+                                      else
+                                        while len(atts)
+                                          let amat = matchstr(atts, '^\s*\zs\([0-9a-zA-Z-:]\+\%(="[^"]*"\|=''[^'']*''\|=[^ ''"]\+\|[^ ''"\]]*\)\{0,1}\)')
+                                          if len(amat) == 0
+                                            break
+                                          endif
+                                          let key = split(amat, '=')[0]
+                                          let Val = amat[len(key)+1:]
+                                          if key =~# '\.$' && Val ==# ''
+                                            let key = key[:-2]
+                                            unlet Val
+                                            let Val = function('emmet#types#true')
+                                          elseif Val =~# '^["'']'
+                                            let Val = Val[1:-2]
+                                          endif
+                                          let current.attr[key] = Val
+                                          if index(current.attrs_order, key) == -1
+                                            let current.attrs_order += [key]
+                                          endif
+                                          let atts = atts[stridx(atts, amat) + len(amat):]
+                                          unlet Val
+                                        endwhile
+                                      endif
+                                    endif
+                                    let attr = substitute(strpart(attr, len(item)), '^\s*', '', '')
+                                  endwhile
+                                endif
+                            
+                                " parse text
+    3              0.000013     if tag_name =~# '^{.*}$'
+                                  let current.name = ''
+                                  let current.value = tag_name
+                                else
+    3              0.000005       let current.value = value
+    3              0.000002     endif
+    3              0.000006     let current.basedirect = basedirect
+    3              0.000004     let current.basevalue = basevalue
+    3              0.000004     let current.multiplier = multiplier
+                            
+                                " parse step inside/outside
+    3              0.000004     if !empty(last)
+    3              0.000009       if operator =~# '>'
+    1              0.000001         unlet! parent
+    1              0.000001         let parent = last
+    1              0.000002         let current.parent = last
+    1              0.000002         let current.pos = last.pos + 1
+    1              0.000001       else
+    2              0.000004         let current.parent = parent
+    2              0.000003         let current.pos = last.pos
+    2              0.000002       endif
+    3              0.000001     else
+                                  let current.parent = parent
+                                  let current.pos = 1
+                                endif
+    3              0.000011     if operator =~# '[<^]'
+                                  for c in range(len(operator))
+                                    let tmp = parent.parent
+                                    if empty(tmp)
+                                      break
+                                    endif
+                                    let parent = tmp
+                                    let current.parent = tmp
+                                  endfor
+                                endif
+                            
+    3              0.000009     call add(parent.child, current)
+    3              0.000004     let last = current
+                            
+                                " parse block
+    3              0.000009     if block_start =~# '('
+                                  if operator =~# '>'
+                                    let last.pos += 1
+                                  endif
+                                  let last.block = 1
+                                  for n in range(len(block_start))
+                                    let pos += [last.pos]
+                                  endfor
+                                endif
+    3              0.000008     if block_end =~# ')'
+                                  for n in split(substitute(substitute(block_end, ' ', '', 'g'), ')', ',),', 'g'), ',')
+                                    if n ==# ')'
+                                      if len(pos) > 0 && last.pos >= pos[-1]
+                                        for c in range(last.pos - pos[-1])
+                                          let tmp = parent.parent
+                                          if !has_key(tmp, 'parent')
+                                            break
+                                          endif
+                                          let parent = tmp
+                                        endfor
+                                        if len(pos) > 0
+                                          call remove(pos, -1)
+                                        endif
+                                        let last = parent
+                                        let last.pos += 1
+                                      endif
+                                    elseif len(n)
+                                      let st = 0
+                                      for nc in range(len(last.child))
+                                        if last.child[nc].block
+                                          let st = nc
+                                          break
+                                        endif
+                                      endfor
+                                      let cl = last.child[st :]
+                                      let cls = []
+                                      for c in range(n[1:])
+                                        for cc in cl
+                                          if cc.multiplier > 1
+                                            let cc.basedirect = c + 1
+                                          else
+                                            let cc.basevalue = c + 1
+                                          endif
+                                        endfor
+                                        let cls += deepcopy(cl)
+                                      endfor
+                                      if st > 0
+                                        let last.child = last.child[:st-1] + cls
+                                      else
+                                        let last.child = cls
+                                      endif
+                                    endif
+                                  endfor
+                                endif
+    3              0.000016     let abbr = abbr[stridx(abbr, match) + len(match):]
+                            
+    3              0.000005     if g:emmet_debug > 1
+                                  echomsg 'str='.str
+                                  echomsg 'block_start='.block_start
+                                  echomsg 'tag_name='.tag_name
+                                  echomsg 'operator='.operator
+                                  echomsg 'attributes='.attributes
+                                  echomsg 'value='.value
+                                  echomsg 'basevalue='.basevalue
+                                  echomsg 'multiplier='.multiplier
+                                  echomsg 'block_end='.block_end
+                                  echomsg 'abbr='.abbr
+                                  echomsg 'pos='.string(pos)
+                                  echomsg '---'
+                                endif
+    3              0.000002   endwhile
+    3              0.000004   return root
+
+FUNCTION  <SNR>50_can_diffoff()
+Called 2 times
+Total time:   0.000052
+ Self time:   0.000052
+
+count  total (s)   self (s)
+    2              0.000031   return getwinvar(bufwinnr(a:buf), '&diff') && !empty(getbufvar(a:buf, 'git_dir')) && !empty(getwinvar(bufwinnr(a:buf), 'fugitive_diff_restore'))
+
+FUNCTION  syntastic#log#debugDump()
+Called 1 time
+Total time:   0.000013
+ Self time:   0.000008
+
+count  total (s)   self (s)
+    1   0.000011   0.000006     if !s:_isDebugEnabled(a:level)
+    1              0.000002         return
+                                endif
+                            
+                                call syntastic#log#debugShowVariables( a:level, sort(keys(g:_SYNTASTIC_DEFAULTS)) )
+
+FUNCTION  emmet#util#regionIsValid()
+Called 3 times
+Total time:   0.000066
+ Self time:   0.000066
+
+count  total (s)   self (s)
+    3              0.000060   if a:region[0][0] == 0 || a:region[1][0] == 0 | return 0 | endif
+                              return 1
+
+FUNCTION  emmet#lang#html#toString()
+Called 3 times
+Total time:   0.003062
+ Self time:   0.001042
+
+count  total (s)   self (s)
+    3              0.000004   let settings = a:settings
+    3              0.000004   let current = a:current
+    3              0.000004   let type = a:type
+    3              0.000004   let inline = a:inline
+    3              0.000003   let filters = a:filters
+    3              0.000003   let itemno = a:itemno
+    3              0.000004   let indent = a:indent
+    3   0.000221   0.000017   let dollar_expr = emmet#getResource(type, 'dollar_expr', 1)
+    3   0.000212   0.000013   let q = emmet#getResource(type, 'quote_char', '"')
+    3   0.000209   0.000015   let ct = emmet#getResource(type, 'comment_type', 'both')
+    3   0.000334   0.000014   let an = emmet#getResource(type, 'attribute_name', {})
+                            
+    3   0.000063   0.000017   if emmet#useFilter(filters, 'haml')
+                                return emmet#lang#haml#toString(settings, current, type, inline, filters, itemno, indent)
+                              endif
+    3   0.000047   0.000009   if emmet#useFilter(filters, 'slim')
+                                return emmet#lang#slim#toString(settings, current, type, inline, filters, itemno, indent)
+                              endif
+                            
+    3              0.000003   let comment = ''
+    3              0.000005   let current_name = current.name
+    3              0.000003   if dollar_expr
+    3              0.000020     let current_name = substitute(current_name, '\$$', itemno+1, '')
+    3              0.000002   endif
+                            
+    3              0.000003   let str = ''
+    3              0.000006   if len(current_name) == 0
+                                let text = current.value[1:-2]
+                                if dollar_expr
+                                  " TODO: regexp engine specified
+                                  let nr = itemno + 1
+                                  if exists('&regexpengine')
+                                    let text = substitute(text, '\%#=1\%(\\\)\@\<!\(\$\+\)\(@-\?[0-9]\+\)\{0,1}\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d",s:dollar_add(submatch(2)[1:],nr)).submatch(3)', 'g')
+                                  else
+                                    let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\(@-\?[0-9]\+\)\{0,1}\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d",s:dollar_add(submatch(2)[1:],nr).submatch(3)', 'g')
+                                  endif
+                                  let text = substitute(text, '\${nr}', "\n", 'g')
+                                  let text = substitute(text, '\\\$', '$', 'g')
+                                endif
+                                return text
+                              endif
+    3              0.000006   if len(current_name) > 0
+    3              0.000009     let str .= '<' . current_name
+    3              0.000001   endif
+    9   0.000126   0.000046   for attr in emmet#util#unique(current.attrs_order + keys(current.attr))
+    6              0.000010     if !has_key(current.attr, attr)
+    6              0.000006       continue
+                                endif
+                                let Val = current.attr[attr]
+                                if type(Val) == 2 && Val == function('emmet#types#true')
+                                  unlet Val
+                                  let Val = 'true'
+                                  if g:emmet_html5
+                                    let str .= ' ' . attr
+                                  else
+                                    let str .= ' ' . attr . '=' . q . attr . q
+                                  endif
+                                  if emmet#useFilter(filters, 'c')
+                                    if attr ==# 'id' | let comment .= '#' . Val | endif
+                                    if attr ==# 'class' | let comment .= '.' . Val | endif
+                                  endif
+                                else
+                                  if dollar_expr
+                                    while Val =~# '\$\([^#{]\|$\)'
+                                      " TODO: regexp engine specified
+                                      if exists('&regexpengine')
+                                        let Val = substitute(Val, '\%#=1\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+                                      else
+                                        let Val = substitute(Val, '\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+                                      endif
+                                    endwhile
+                                    let attr = substitute(attr, '\$$', itemno+1, '')
+                                  endif
+                                  if attr ==# 'class' && emmet#useFilter(filters, 'bem')
+                                    let vals = split(Val, '\s\+')
+                                    let Val = ''
+                                    let lead = ''
+                                    for _val in vals
+                                      if len(Val) > 0
+                                        let Val .= ' '
+                                      endif
+                                      if _val =~# '^_'
+                                        if has_key(current.parent.attr, 'class')
+                                          let lead = current.parent.attr["class"]
+                                          if _val =~# '^__'
+                                            let Val .= lead . _val
+                                          else
+                                            let Val .= lead . ' ' . lead . _val
+                                          endif
+                                        else
+                                          let lead = split(vals[0], '_')[0]
+                                          let Val .= lead . _val
+                                        endif
+                                      elseif _val =~# '^-'
+                                        for l in split(_val, '_')
+                                          if len(Val) > 0
+                                            let Val .= ' '
+                                          endif
+                                          let l = substitute(l, '^-', '__', '')
+                                          if len(lead) == 0
+                                            let pattr = current.parent.attr
+                                            if has_key(pattr, 'class')
+                                              let lead = split(pattr['class'], '\s\+')[0]
+                                            endif
+                                          endif
+                                          let Val .= lead . l
+                                          let lead .= l . '_'
+                                        endfor
+                                      else
+                                        let Val .= _val
+                                      endif
+                                    endfor
+                                  endif
+                                  if has_key(an, attr)
+                                    let attr = an[attr]
+                                  endif
+                                  if emmet#isExtends(type, 'jsx') && Val =~ '^{.*}$'
+                                    let str .= ' ' . attr . '=' . Val
+                                  else
+                                    let str .= ' ' . attr . '=' . q . Val . q
+                                  endif
+                                  if emmet#useFilter(filters, 'c')
+                                    if attr ==# 'id' | let comment .= '#' . Val | endif
+                                    if attr ==# 'class' | let comment .= '.' . Val | endif
+                                  endif
+                                endif
+                                unlet Val
+                              endfor
+    3              0.000007   if len(comment) > 0 && ct ==# 'both'
+                                let str = '<!-- ' . comment . " -->\n" . str
+                              endif
+    3              0.000016   if stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1
+                                let str .= settings.html.empty_element_suffix
+                              else
+    3              0.000006     let str .= '>'
+    3              0.000009     let text = current.value[1:-2]
+    3              0.000003     if dollar_expr
+                                  " TODO: regexp engine specified
+    3              0.000005       let nr = itemno + 1
+    3              0.000007       if exists('&regexpengine')
+    3              0.000050         let text = substitute(text, '\%#=1\%(\\\)\@\<!\(\$\+\)\(@-\?[0-9]\+\)\{0,1}\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d",s:dollar_add(submatch(2)[1:],nr)).submatch(3)', 'g')
+    3              0.000002       else
+                                    let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\(@-\?[0-9]\+\)\{0,1}\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d",s:dollar_add(submatch(2)[1:],nr)).submatch(3)', 'g')
+                                  endif
+    3              0.000016       let text = substitute(text, '\${nr}', "\n", 'g')
+    3              0.000013       let text = substitute(text, '\\\$', '$', 'g')
+    3              0.000005       if text != ''
+                                    let str = substitute(str, '\("\zs$#\ze"\|\s\zs\$#"\|"\$#\ze\s\)', text, 'g')
+                                  endif
+    3              0.000002     endif
+    3              0.000004     let str .= text
+    3              0.000006     let nc = len(current.child)
+    3              0.000003     let dr = 0
+    3              0.000003     if nc > 0
+    2              0.000004       for n in range(nc)
+    1              0.000002         let child = current.child[n]
+    1              0.000002         if child.multiplier > 1
+                                      let str .= "\n" . indent
+                                      let dr = 1
+                                    elseif len(current_name) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
+    1              0.000006           if nc > 1 || (len(child.name) > 0 && stridx(','.settings.html.inline_elements.',', ','.child.name.',') == -1)
+    1              0.000002             let str .= "\n" . indent
+    1              0.000001             let dr = 1
+    1              0.000002           elseif current.multiplier == 1 && nc == 1 && len(child.name) == 0
+                                        let str .= "\n" . indent
+                                        let dr = 1
+                                      endif
+    1              0.000001         endif
+    1              0.000139         let inner = emmet#toString(child, type, 0, filters, itemno, indent)
+    1              0.000006         let inner = substitute(inner, "^\n", '', 'g')
+    1              0.000007         let inner = substitute(inner, "\n", "\n" . escape(indent, '\'), 'g')
+    1              0.000007         let inner = substitute(inner, "\n" . escape(indent, '\') . '$', '', 'g')
+    1              0.000002         let str .= inner
+    1              0.000001       endfor
+    1              0.000001     else
+    2              0.000007       if settings.html.indent_blockelement && len(current_name) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
+                                    let str .= "\n" . indent . '${cursor}' . "\n"
+                                  else
+    2              0.000005         let str .= '${cursor}'
+    2              0.000002       endif
+    2              0.000001     endif
+    3              0.000001     if dr
+    1              0.000002       let str .= "\n"
+    1              0.000001     endif
+    3              0.000008     let str .= '</' . current_name . '>'
+    3              0.000002   endif
+    3              0.000005   if len(comment) > 0
+                                if ct ==# 'lastonly'
+                                  let str .= '<!-- ' . comment . ' -->'
+                                else
+                                  let str .= "\n<!-- /" . comment . ' -->'
+                                endif
+                              endif
+    3              0.000009   if len(current_name) > 0 && current.multiplier > 0 || stridx(','.settings.html.block_elements.',', ','.current_name.',') != -1
+    3              0.000006     let str .= "\n"
+    3              0.000001   endif
+    3              0.000003   return str
+
+FUNCTION  indent_guides#clear_matches()
+Called 2 times
+Total time:   0.000081
+ Self time:   0.000067
+
+count  total (s)   self (s)
+    2   0.000041   0.000027   call indent_guides#init_matches()
+    2              0.000006   if !empty(w:indent_guides_matches)
+                                let l:index = 0
+                                for l:match_id in w:indent_guides_matches
+                                  try
+                                    call matchdelete(l:match_id)
+                                  catch /E803:/
+                                    " Do nothing
+                                  endtry
+                                  call remove(w:indent_guides_matches, l:index)
+                                  let l:index += l:index
+                                endfor
+                              endif
+
+FUNCTION  <SNR>61_Highlight_Matching_Pair()
+Called 427 times
+Total time:   0.263218
+ Self time:   0.263218
+
+count  total (s)   self (s)
+                              " Remove any previous match.
+  427              0.003022   if exists('w:paren_hl_on') && w:paren_hl_on
+  377              0.001560     silent! call matchdelete(3)
+  377              0.000958     let w:paren_hl_on = 0
+  377              0.000443   endif
+                            
+                              " Avoid that we remove the popup menu.
+                              " Return when there are no colors (looks like the cursor jumps).
+  427              0.002105   if pumvisible() || (&t_Co < 8 && !has("gui_running"))
+                                return
+                              endif
+                            
+                              " Get the character under the cursor and check if it's in 'matchpairs'.
+  427              0.001411   let c_lnum = line('.')
+  427              0.001123   let c_col = col('.')
+  427              0.000617   let before = 0
+                            
+  427              0.001366   let text = getline(c_lnum)
+  427              0.010632   let matches = matchlist(text, '\(.\)\=\%'.c_col.'c\(.\=\)')
+  427              0.001129   if empty(matches)
+                                let [c_before, c] = ['', '']
+                              else
+  427              0.002412     let [c_before, c] = matches[1:2]
+  427              0.000360   endif
+  427              0.008590   let plist = split(&matchpairs, '.\zs[:,]')
+  427              0.001765   let i = index(plist, c)
+  427              0.000658   if i < 0
+                                " not found, in Insert mode try character before the cursor
+   50              0.000211     if c_col > 1 && (mode() == 'i' || mode() == 'R')
+   32              0.000119       let before = strlen(c_before)
+   32              0.000075       let c = c_before
+   32              0.000112       let i = index(plist, c)
+   32              0.000034     endif
+   50              0.000058     if i < 0
+                                  " not found, nothing to do
+   50              0.000061       return
+                                endif
+                              endif
+                            
+                              " Figure out the arguments for searchpairpos().
+  377              0.000527   if i % 2 == 0
+  374              0.000645     let s_flags = 'nW'
+  374              0.001165     let c2 = plist[i + 1]
+  374              0.000300   else
+    3              0.000011     let s_flags = 'nbW'
+    3              0.000010     let c2 = c
+    3              0.000017     let c = plist[i - 1]
+    3              0.000011   endif
+  377              0.000880   if c == '['
+                                let c = '\['
+                                let c2 = '\]'
+                              endif
+                            
+                              " Find the match.  When it was just before the cursor move it there for a
+                              " moment.
+  377              0.000463   if before > 0
+                                let has_getcurpos = exists("*getcurpos")
+                                if has_getcurpos
+                                  " getcurpos() is more efficient but doesn't exist before 7.4.313.
+                                  let save_cursor = getcurpos()
+                                else
+                                  let save_cursor = winsaveview()
+                                endif
+                                call cursor(c_lnum, c_col - before)
+                              endif
+                            
+                              " Build an expression that detects whether the current cursor position is in
+                              " certain syntax types (string, comment, etc.), for use as searchpairpos()'s
+                              " skip argument.
+                              " We match "escape" for special items, such as lispEscapeSpecial.
+  377              0.001968   let s_skip = '!empty(filter(map(synstack(line("."), col(".")), ''synIDattr(v:val, "name")''), ' . '''v:val =~? "string\\|character\\|singlequote\\|escape\\|comment"''))'
+                              " If executing the expression determines that the cursor is currently in
+                              " one of the syntax types, then we want searchpairpos() to find the pair
+                              " within those syntax types (i.e., not skip).  Otherwise, the cursor is
+                              " outside of the syntax types and s_skip should keep its value so we skip any
+                              " matching pair inside the syntax types.
+  377              0.076333   execute 'if' s_skip '| let s_skip = 0 | endif'
+                            
+                              " Limit the search to lines visible in the window.
+  377              0.001285   let stoplinebottom = line('w$')
+  377              0.001031   let stoplinetop = line('w0')
+  377              0.000571   if i % 2 == 0
+  374              0.000920     let stopline = stoplinebottom
+  374              0.000308   else
+    3              0.000011     let stopline = stoplinetop
+    3              0.000004   endif
+                            
+                              " Limit the search time to 300 msec to avoid a hang on very long lines.
+                              " This fails when a timeout is not supported.
+  377              0.001120   if mode() == 'i' || mode() == 'R'
+  368              0.001954     let timeout = exists("b:matchparen_insert_timeout") ? b:matchparen_insert_timeout : g:matchparen_insert_timeout
+  368              0.000286   else
+    9              0.000046     let timeout = exists("b:matchparen_timeout") ? b:matchparen_timeout : g:matchparen_timeout
+    9              0.000007   endif
+  377              0.000444   try
+  377              0.077425     let [m_lnum, m_col] = searchpairpos(c, '', c2, s_flags, s_skip, stopline, timeout)
+  377              0.000756   catch /E118/
+                                " Can't use the timeout, restrict the stopline a bit more to avoid taking
+                                " a long time on closed folds and long lines.
+                                " The "viewable" variables give a range in which we can scroll while
+                                " keeping the cursor at the same position.
+                                " adjustedScrolloff accounts for very large numbers of scrolloff.
+                                let adjustedScrolloff = min([&scrolloff, (line('w$') - line('w0')) / 2])
+                                let bottom_viewable = min([line('$'), c_lnum + &lines - adjustedScrolloff - 2])
+                                let top_viewable = max([1, c_lnum-&lines+adjustedScrolloff + 2])
+                                " one of these stoplines will be adjusted below, but the current values are
+                                " minimal boundaries within the current window
+                                if i % 2 == 0
+                                  if has("byte_offset") && has("syntax_items") && &smc > 0
+                            	let stopbyte = min([line2byte("$"), line2byte(".") + col(".") + &smc * 2])
+                            	let stopline = min([bottom_viewable, byte2line(stopbyte)])
+                                  else
+                            	let stopline = min([bottom_viewable, c_lnum + 100])
+                                  endif
+                                  let stoplinebottom = stopline
+                                else
+                                  if has("byte_offset") && has("syntax_items") && &smc > 0
+                            	let stopbyte = max([1, line2byte(".") + col(".") - &smc * 2])
+                            	let stopline = max([top_viewable, byte2line(stopbyte)])
+                                  else
+                            	let stopline = max([top_viewable, c_lnum - 100])
+                                  endif
+                                  let stoplinetop = stopline
+                                endif
+                                let [m_lnum, m_col] = searchpairpos(c, '', c2, s_flags, s_skip, stopline)
+                              endtry
+                            
+  377              0.000493   if before > 0
+                                if has_getcurpos
+                                  call setpos('.', save_cursor)
+                                else
+                                  call winrestview(save_cursor)
+                                endif
+                              endif
+                            
+                              " If a match is found setup match highlighting.
+  377              0.001154   if m_lnum > 0 && m_lnum >= stoplinetop && m_lnum <= stoplinebottom 
+  377              0.001131     if exists('*matchaddpos')
+  377              0.005226       call matchaddpos('MatchParen', [[c_lnum, c_col - before], [m_lnum, m_col]], 10, 3)
+  377              0.000334     else
+                                  exe '3match MatchParen /\(\%' . c_lnum . 'l\%' . (c_col - before) . 'c\)\|\(\%' . m_lnum . 'l\%' . m_col . 'c\)/'
+                                endif
+  377              0.000716     let w:paren_hl_on = 1
+  377              0.000265   endif
+
+FUNCTION  emmet#anchorizeURL()
+Called 3 times
+Total time:   0.000524
+ Self time:   0.000407
+
+count  total (s)   self (s)
+    3              0.000026   let mx = 'https\=:\/\/[-!#$%&*+,./:;=?@0-9a-zA-Z_~]\+'
+    3              0.000157   let pos1 = searchpos(mx, 'bcnW')
+    3              0.000073   let url = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
+    3              0.000065   let block = [pos1, [pos1[0], pos1[1] + len(url) - 1]]
+    3   0.000185   0.000068   if !emmet#util#cursorInRegion(block)
+    3              0.000007     return ''
+                              endif
+                            
+                              let mx = '.*<title[^>]*>\s*\zs\([^<]\+\)\ze\s*<\/title[^>]*>.*'
+                              let content = emmet#util#getContentFromURL(url)
+                              let content = substitute(content, '\r', '', 'g')
+                              let content = substitute(content, '[ \n]\+', ' ', 'g')
+                              let content = substitute(content, '<!--.\{-}-->', '', 'g')
+                              let title = matchstr(content, mx)
+                            
+                              let type = emmet#getFileType()
+                              let rtype = emmet#lang#exists(type) ? type : 'html'
+                              if &filetype ==# 'markdown'
+                                let expand = printf('[%s](%s)', substitute(title, '[\[\]]', '\\&', 'g'), url)
+                              elseif a:flag ==# 0
+                                let a = emmet#lang#html#parseTag('<a>')
+                                let a.attr.href = url
+                                let a.value = '{' . title . '}'
+                                let expand = emmet#toString(a, rtype, 0, [])
+                                let expand = substitute(expand, '\${cursor}', '', 'g')
+                              else
+                                let body = emmet#util#getTextFromHTML(content)
+                                let body = '{' . substitute(body, '^\(.\{0,100}\).*', '\1', '') . '...}'
+                            
+                                let blockquote = emmet#lang#html#parseTag('<blockquote class="quote">')
+                                let a = emmet#lang#html#parseTag('<a>')
+                                let a.attr.href = url
+                                let a.value = '{' . title . '}'
+                                call add(blockquote.child, a)
+                                call add(blockquote.child, emmet#lang#html#parseTag('<br/>'))
+                                let p = emmet#lang#html#parseTag('<p>')
+                                let p.value = body
+                                call add(blockquote.child, p)
+                                let cite = emmet#lang#html#parseTag('<cite>')
+                                let cite.value = '{' . url . '}'
+                                call add(blockquote.child, cite)
+                                let expand = emmet#toString(blockquote, rtype, 0, [])
+                                let expand = substitute(expand, '\${cursor}', '', 'g')
+                              endif
+                              let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
+                              let expand = substitute(expand, "\n", "\n" . indent, 'g')
+                              call emmet#util#setContent(block, expand)
+                              return ''
+
+FUNCTION  syntastic#util#rawVar()
+Called 1 time
+Total time:   0.000012
+ Self time:   0.000012
+
+count  total (s)   self (s)
+    1              0.000011     return get(b:, a:name, get(g:, a:name, a:0 > 0 ? a:1 : ''))
+
+FUNCTION  Powerline#Functions#GetFilepath()
+Called 236 times
+Total time:   0.011743
+ Self time:   0.011743
+
+count  total (s)   self (s)
+                            	" Recalculate the filepath when cwd changes.
+  236              0.007314 	let cwd = getcwd()
+  236              0.001487 	if exists("b:Powerline_cwd") && cwd != b:Powerline_cwd
+                            		unlet! b:Powerline_filepath
+                            	endif
+  236              0.000487 	let b:Powerline_cwd = cwd
+                            
+  236              0.000756 	if exists('b:Powerline_filepath')
+  236              0.000395 		return b:Powerline_filepath
+                            	endif
+                            
+                            	let dirsep = has('win32') && ! &shellslash ? '\' : '/'
+                            	let filepath = expand('%:p')
+                            
+                            	if empty(filepath)
+                            		return ''
+                            	endif
+                            
+                            	let ret = ''
+                            
+                            	if g:Powerline_stl_path_style == 'short'
+                            		" Display a short path where the first directory is displayed with its
+                            		" full name, and the subsequent directories are shortened to their
+                            		" first letter, i.e. "/home/user/foo/foo/bar/baz.vim" becomes
+                            		" "~/foo/f/b/baz.vim"
+                            		"
+                            		" This displays the shortest possible path, relative to ~ or the
+                            		" current directory.
+                            		let mod = (exists('+acd') && &acd) ? ':~:h' : ':~:.:h'
+                            		let fpath = split(fnamemodify(filepath, mod), dirsep)
+                            		let fpath_shortparts = map(fpath[1:], 'v:val[0]')
+                            		let ret = join(extend([fpath[0]], fpath_shortparts), dirsep) . dirsep
+                            	elseif g:Powerline_stl_path_style == 'relative'
+                            		" Display a relative path, similar to the %f statusline item
+                            		let ret = fnamemodify(filepath, ':~:.:h') . dirsep
+                            	elseif g:Powerline_stl_path_style == 'full'
+                            		" Display the full path, similar to the %F statusline item
+                            		let ret = fnamemodify(filepath, ':h') . dirsep
+                            	endif
+                            
+                            	if ret == ('.' . dirsep)
+                            		let ret = ''
+                            	endif
+                            
+                            	let b:Powerline_filepath = ret
+                            	return ret
+
+FUNCTION  <SNR>32_addtomrufs()
+Called 3 times
+Total time:   0.000672
+ Self time:   0.000672
+
+count  total (s)   self (s)
+    3              0.000076 	let fn = fnamemodify(a:fname, ':p')
+    3              0.000029 	let fn = exists('+ssl') ? tr(fn, '/', '\') : fn
+    3              0.000499 	if ( !empty({s:in}) && fn !~# {s:in} ) || ( !empty({s:ex}) && fn =~# {s:ex} ) || !empty(getbufvar('^'.fn.'$', '&bt')) || !filereadable(fn) | retu
+                            	en
+    2              0.000020 	let idx = index(s:mrufs, fn, 0, !{s:cseno})
+    2              0.000004 	if idx
+                            		cal filter(s:mrufs, 'v:val !='.( {s:cseno} ? '#' : '?' ).' fn')
+                            		cal insert(s:mrufs, fn)
+                            		if {s:soup} && idx < 0
+                            			cal s:savetofile(s:mergelists())
+                            		en
+                            	en
+
+FUNCTION  Powerline#Functions#GetMode()
+Called 236 times
+Total time:   0.010134
+ Self time:   0.010134
+
+count  total (s)   self (s)
+  236              0.000689 	let mode = mode()
+                            
+  236              0.000439 	if mode ==# 'v'
+                            		let mode = get(g:, "Powerline_mode_v", "VISUAL")
+                            	elseif mode ==# 'V'
+                            		let mode = get(g:, "Powerline_mode_V", "V⋅LINE")
+                            	elseif mode ==# ''
+                            		let mode = get(g:, "Powerline_mode_cv", "V⋅BLOCK")
+                            	elseif mode ==# 's'
+                            		let mode = get(g:, "Powerline_mode_s", "SELECT")
+                            	elseif mode ==# 'S'
+                            		let mode = get(g:, "Powerline_mode_S", "S⋅LINE")
+                            	elseif mode ==# ''
+                            		let mode = get(g:, "Powerline_mode_cs", "S⋅BLOCK")
+                            	elseif mode =~# '\vi'
+  209              0.000763 		let mode = get(g:, "Powerline_mode_i", "INSERT")
+  209              0.000215 	elseif mode =~# '\v(R|Rv)'
+                            		let mode = get(g:, "Powerline_mode_R", "REPLACE")
+                            	else
+                            		" Fallback to normal mode
+   27              0.000170 		let mode = get(g:, "Powerline_mode_n", "NORMAL")
+   27              0.000037 	endif
+                            
+  236              0.000305 	return mode
+
+FUNCTIONS SORTED ON TOTAL TIME
+count  total (s)   self (s)  function
+  427   0.263218             <SNR>61_Highlight_Matching_Pair()
+    3   0.027475   0.002024  emmet#expandAbbr()
+    3   0.018487   0.000235  emmet#parseIntoTree()
+    3   0.018222   0.004170  emmet#lang#html#parseIntoTree()
+   39   0.015771   0.003770  emmet#getResource()
+   12   0.012001             emmet#mergeConfig()
+  236   0.011743             Powerline#Functions#GetFilepath()
+  240   0.010781             Pl#Statusline()
+  236   0.010134             Powerline#Functions#GetMode()
+    5   0.004345   0.001411  Pl#UpdateStatusline()
+    3   0.003952   0.000425  emmet#toString()
+    3   0.003062   0.001042  emmet#lang#html#toString()
+   60   0.002934             Pl#Match#Validate()
+    3   0.001484   0.000055  emmet#getExpandos()
+    1   0.001481   0.000644  <SNR>51_MRU_AddFile()
+    8   0.001465   0.001198  emmet#getFileType()
+   12   0.001378   0.001116  SyntasticRefreshCursor()
+    3   0.000849   0.000177  <SNR>32_record()
+    3   0.000708   0.000033  emmet#expandDollarExpr()
+    3   0.000675   0.000074  emmet#reExpandDollarExpr()
+
+FUNCTIONS SORTED ON SELF TIME
+count  total (s)   self (s)  function
+  427              0.263218  <SNR>61_Highlight_Matching_Pair()
+   12              0.012001  emmet#mergeConfig()
+  236              0.011743  Powerline#Functions#GetFilepath()
+  240              0.010781  Pl#Statusline()
+  236              0.010134  Powerline#Functions#GetMode()
+    3   0.018222   0.004170  emmet#lang#html#parseIntoTree()
+   39   0.015771   0.003770  emmet#getResource()
+   60              0.002934  Pl#Match#Validate()
+    3   0.027475   0.002024  emmet#expandAbbr()
+    5   0.004345   0.001411  Pl#UpdateStatusline()
+    8   0.001465   0.001198  emmet#getFileType()
+   12   0.001378   0.001116  SyntasticRefreshCursor()
+    3   0.003062   0.001042  emmet#lang#html#toString()
+    3              0.000672  <SNR>32_addtomrufs()
+    1   0.001481   0.000644  <SNR>51_MRU_AddFile()
+    3              0.000596  Powerline#Functions#GetShortPath()
+    3              0.000552  emmet#lang#html#findTokens()
+    1              0.000541  <SNR>51_MRU_SaveList()
+    3   0.003952   0.000425  emmet#toString()
+    3   0.000524   0.000407  emmet#anchorizeURL()
+
