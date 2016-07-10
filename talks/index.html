@@ -2,4 +2,18 @@
 layout: default
 ---
 
+
+
 <h1>the Talks</h1>
+
+<h2>Dwarf</h2>
+
+<ul>
+	{% for talks in site.pages %}
+		{% if talks.type == 'dwarf' %} 
+			<li>
+				{{talks.title}}
+			</li>
+		{% endif %}
+	{% endfor %}
+</ul>
