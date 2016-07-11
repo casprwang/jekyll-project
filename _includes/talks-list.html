@@ -2,7 +2,9 @@
 	{% for talks in site.pages %}
 		{% if talks.type == include.type %} 
 			<li>
+			 	<img src="{{site.baseurl}}/img/planets/{{talks.image}}" alt="Photo of {{planet.title}}">
 				{{talks.title}}
+				<p>{{talks.meta}}</p>
 			</li>
 		{% endif %}
 	{% endfor %}

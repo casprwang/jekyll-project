@@ -8,7 +8,7 @@ discovered: 1801-01-01
 orbit: 4.6 years
 radius: 487 km
 tilt: 3 percent
-image: ceres.jpg
+image: pluto.jpg
 source: http://en.wikipedia.org/wiki/Pluto
 ---
 
