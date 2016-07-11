@@ -2,9 +2,11 @@
 	{% for talks in site.pages %}
 		{% if talks.type == include.type %} 
 			<li>
-			 	<img src="{{site.baseurl}}/img/planets/{{talks.image}}" alt="Photo of {{planet.title}}">
-				{{talks.title}}
-				<p>{{talks.meta}}</p>
+				<a href="{{site.baseurl}}{{talks.url}}">
+					<img src="{{site.baseurl}}/img/planets/{{talks.image}}" alt="Photo of {{planet.title}}">
+					<h3>{{talks.title}}</h3>
+					<p>{{talks.meta}}</p>
+				</a>	
 			</li>
 		{% endif %}
 	{% endfor %}
