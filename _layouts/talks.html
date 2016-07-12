@@ -1,0 +1,18 @@
+---
+layout: default
+---
+
+<strong>Talks</strong>
+
+<nav>
+	<ul>
+		{% for three in site.data.threedays %}
+		<li>
+			<a href="{{site.baseurl}}/posts.html/">{{three.title}}</a>
+			{{three.content | markdownify}}
+		</li>
+		{% endfor %}
+	</ul>
+</nav>
+
+{{content}}

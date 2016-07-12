@@ -8,7 +8,7 @@ layout: default
 <ol>
 	{% for three in site.data.threedays %}
 	<li>
-		<a href="">{{three.title}}</a>
+		<a href="{{site.baseurl}}/posts.html/">{{three.title}}</a>
 		{{three.content | markdownify}}
 	</li>
 	{% endfor %}
